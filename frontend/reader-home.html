@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>TUBIGTALA — Reader Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: { 300:'#93c5fd', 400:'#60a5fa', 500:'#3b82f6', 600:'#2563eb' },
+                        cyan:  { 400:'#22d3ee', 500:'#06b6d4' },
+                    },
+                    boxShadow: {
+                        glow:  '0 0 24px rgba(59,130,246,0.22)',
+                        glowG: '0 0 18px rgba(16,185,129,0.18)',
+                        glowC: '0 0 24px rgba(6,182,212,0.2)',
+                    },
+                    animation: {
+                        'pulse-dot': 'pulseDot 2s ease-in-out infinite',
+                        'fade-in':   'fadeIn 0.18s ease-out',
+                        'slide-up':  'slideUp 0.2s ease-out',
+                        'scan-line': 'scanLine 2s linear infinite',
+                    },
+                    keyframes: {
+                        pulseDot: { '0%,100%': { boxShadow: '0 0 0 0 rgba(59,130,246,0.6)' }, '50%': { boxShadow: '0 0 0 6px rgba(59,130,246,0)' } },
+                        fadeIn:   { from: { opacity: '0' }, to: { opacity: '1' } },
+                        slideUp:  { from: { opacity: '0', transform: 'translateY(8px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+                        scanLine: { '0%': { top: '10%' }, '100%': { top: '90%' } },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        /* ── THEME VARIABLES (same as consumer dashboard) ── */
+        html.dark {
+            --bg:        #08101c;
+            --surface:   #0f1a2e;
+            --card:      #131f35;
+            --card-hov:  #172540;
+            --border:    #1e2e47;
+            --border-hi: #2a3f5f;
+            --muted:     #4a607a;
+            --body:      #cbd5e1;
+            --heading:   #f1f5f9;
+            --divider:   rgba(30,46,71,0.6);
+            --input-bg:  #08101c;
+            --row-hover: rgba(15,26,46,0.65);
+            --nav-blur:  rgba(8,16,28,0.88);
+            --tip-bg:    rgba(6,182,212,0.05);
+            --tip-bdr:   rgba(6,182,212,0.2);
+            --note-bg:   rgba(59,130,246,0.06);
+            --note-bdr:  rgba(59,130,246,0.22);
+            --tog-track: #1e2e47;
+            --tog-thumb: #60a5fa;
+            --tog-pos:   3px;
+        }
+        html.light {
+            --bg:        #f0f4fb;
+            --surface:   #e6edf8;
+            --card:      #ffffff;
+            --card-hov:  #f4f7ff;
+            --border:    #cdd8ee;
+            --border-hi: #a8bcd8;
+            --muted:     #7a90a8;
+            --body:      #374151;
+            --heading:   #0f172a;
+            --divider:   rgba(180,200,230,0.55);
+            --input-bg:  #f8faff;
+            --row-hover: rgba(220,230,248,0.6);
+            --nav-blur:  rgba(240,244,251,0.9);
+            --tip-bg:    rgba(6,182,212,0.05);
+            --tip-bdr:   rgba(6,182,212,0.22);
+            --note-bg:   rgba(59,130,246,0.05);
+            --note-bdr:  rgba(59,130,246,0.18);
+            --tog-track: #a8bcd8;
+            --tog-thumb: #f59e0b;
+            --tog-pos:   23px;
+        }
+
+        /* ── SEMANTIC UTILITY CLASSES ── */
+        body       { background: var(--bg); color: var(--body); transition: background .3s, color .3s; }
+        .v-card    { background: var(--card); border-color: var(--border); transition: background .3s, border-color .3s; }
+        .v-surface { background: var(--surface); }
+        .v-border  { border-color: var(--border); }
+        .v-text    { color: var(--heading); }
+        .v-body    { color: var(--body); }
+        .v-muted   { color: var(--muted); }
+        .v-input   { background: var(--input-bg); border-color: var(--border); color: var(--body); }
+        .v-nav     { background: var(--nav-blur); border-color: var(--border); }
+        .v-hover:hover          { background: var(--card-hov); }
+        .v-surface-hover:hover  { background: var(--surface); }
+        .v-row-hover:hover      { background: var(--row-hover); }
+        .v-divider { border-color: var(--divider); }
+        .v-tip     { background: var(--tip-bg); border-color: var(--tip-bdr); }
+        .v-note    { background: var(--note-bg); border-color: var(--note-bdr); }
+        .v-dropdown{ background: var(--card); border-color: var(--border); }
+
+        /* ── GRID BACKGROUND (dark only) ── */
+        html.dark body::before {
+            content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.025) 1px, transparent 1px);
+            background-size: 44px 44px;
+        }
+        html.light body::before { display: none; }
+        html.light .v-card { box-shadow: 0 2px 14px rgba(30,60,120,0.07); }
+
+        /* ── STAT CARD ACCENTS ── */
+        .stat-accent::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:12px 12px 0 0; }
+        .accent-blue::before   { background: linear-gradient(90deg,#3b82f6,transparent); }
+        .accent-green::before  { background: linear-gradient(90deg,#10b981,transparent); }
+        .accent-amber::before  { background: linear-gradient(90deg,#f59e0b,transparent); }
+        .accent-cyan::before   { background: linear-gradient(90deg,#06b6d4,transparent); }
+
+        /* ── PROGRESS BARS ── */
+        .prog-track { border-radius:999px; height:3px; width:100%; overflow:hidden; background:rgba(128,150,180,0.12); }
+        html.light .prog-track { background: rgba(0,0,0,0.07); }
+        .prog-fill  { height:100%; border-radius:999px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+
+        /* ── TABS ── */
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: slideUp 0.2s ease-out; }
+        .tab-btn  { transition: all .15s; color: var(--muted); }
+        .tab-btn.active {
+            background: var(--card-hov); color: var(--heading);
+            border-color: var(--border-hi) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,.18);
+        }
+
+        /* ── THEME TOGGLE PILL ── */
+        .tog-pill  { width:44px; height:24px; border-radius:999px; background:var(--tog-track); position:relative; cursor:pointer; border:none; transition:background .3s; flex-shrink:0; }
+        .tog-thumb { position:absolute; top:3px; width:18px; height:18px; border-radius:50%; background:var(--tog-thumb); left:var(--tog-pos); transition:left .3s cubic-bezier(.4,0,.2,1),background .3s; }
+
+        /* ── CAMERA VIEWFINDER ── */
+        .scan-corner {
+            position:absolute; width:22px; height:22px;
+            border-color:#06b6d4; border-style:solid; border-width:0;
+        }
+        .scan-corner.tl { top:0; left:0;  border-top-width:3px; border-left-width:3px;  border-radius:3px 0 0 0; }
+        .scan-corner.tr { top:0; right:0; border-top-width:3px; border-right-width:3px; border-radius:0 3px 0 0; }
+        .scan-corner.bl { bottom:0; left:0;  border-bottom-width:3px; border-left-width:3px;  border-radius:0 0 0 3px; }
+        .scan-corner.br { bottom:0; right:0; border-bottom-width:3px; border-right-width:3px; border-radius:0 0 3px 0; }
+        .scan-beam {
+            position:absolute; left:0; right:0; height:2px;
+            background:linear-gradient(90deg,transparent,#06b6d4,transparent);
+            box-shadow:0 0 8px #06b6d4;
+            animation: scanLine 2s linear infinite;
+        }
+
+        /* ── INPUT FOCUS ── */
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
+        }
+        input[readonly] { opacity: 0.5; cursor: not-allowed; }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width:6px; height:6px; }
+        ::-webkit-scrollbar-track { background: var(--surface); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius:99px; }
+
+        @media (max-width:640px)  { .hide-sm { display:none!important; } }
+        @media (max-width:768px)  { .hide-md { display:none!important; } }
+
+        @keyframes slideUp  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+        @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+        @keyframes scanLine { 0%{top:10%} 100%{top:90%} }
+
+        /* ── TOAST ── */
+        .toast {
+            display:flex; align-items:center; gap:12px;
+            padding:12px 18px; border-radius:12px; min-width:260px; max-width:380px;
+            font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:600;
+            box-shadow:0 8px 32px rgba(0,0,0,0.4); pointer-events:all;
+            animation:toastIn .25s cubic-bezier(.16,1,.3,1) forwards; border:1px solid;
+        }
+        .toast.removing { animation:toastOut .2s ease-in forwards; }
+        .toast-success { background:#0f2a1e; border-color:rgba(16,185,129,0.3); color:#34d399; }
+        .toast-error   { background:#2a0f0f; border-color:rgba(239,68,68,0.3);  color:#f87171; }
+        .toast-info    { background:#0f1a2e; border-color:rgba(59,130,246,0.3);  color:#60a5fa; }
+        html.light .toast-success { background:#f0fdf4; border-color:rgba(16,185,129,0.4); color:#059669; }
+        html.light .toast-error   { background:#fef2f2; border-color:rgba(239,68,68,0.4);  color:#dc2626; }
+        html.light .toast-info    { background:#eff6ff; border-color:rgba(59,130,246,0.4);  color:#2563eb; }
+        .toast-icon  { font-size:14px; flex-shrink:0; }
+        .toast-close { margin-left:auto; background:none; border:none; cursor:pointer; opacity:0.5; color:inherit; font-size:14px; padding:0 2px; }
+        .toast-close:hover { opacity:1; }
+        @keyframes toastIn  { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+        @keyframes toastOut { from{opacity:1;transform:none} to{opacity:0;transform:translateX(20px)} }
+    </style>
+</head>
+
+<body class="font-sans min-h-screen">
+<div class="relative z-10 flex flex-col min-h-screen">
+
+<!-- ══════════════════ NAVBAR ══════════════════ -->
+<nav class="sticky top-0 z-50 v-nav border-b backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+
+        <!-- Brand -->
+        <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-droplet text-cyan-400 text-sm"></i>
+            <span class="v-text font-extrabold text-base tracking-tight">TUBIGTALA</span>
+            <span class="hidden sm:inline-flex items-center text-[10px] font-mono font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded-full">Reader</span>
+        </div>
+
+        <!-- Right side -->
+        <div class="flex items-center gap-3">
+            <span id="navClock" class="hidden sm:block font-mono text-xs v-muted v-surface border v-border rounded-lg px-3 py-1.5 select-none">00:00:00</span>
+
+            <!-- Theme toggle -->
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-moon text-[10px] v-muted hide-sm"></i>
+                <button class="tog-pill" onclick="toggleTheme()" title="Toggle theme">
+                    <div class="tog-thumb"></div>
+                </button>
+                <i class="fa-solid fa-sun text-[10px] v-muted hide-sm"></i>
+            </div>
+
+            <!-- Avatar + dropdown -->
+            <div class="relative">
+                <button onclick="toggleDrop(event)" class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-brand-500 flex items-center justify-center text-white text-xs font-bold relative select-none">
+                    <span id="avatarLetter">R</span>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2" style="border-color:var(--bg)"></span>
+                </button>
+                <div id="dropMenu" class="hidden absolute right-0 mt-2 w-52 v-dropdown border rounded-xl shadow-2xl overflow-hidden z-50" style="animation:fadeIn .15s ease-out">
+                    <div class="px-4 py-3 border-b v-border">
+                        <p class="text-xs font-bold v-text" id="ddName">Meter Reader</p>
+                        <p class="text-[11px] v-muted mt-0.5">Reader Account</p>
+                        <p class="text-[10px] font-mono v-muted mt-0.5">Zone A · Feb 10–15, 2026</p>
+                    </div>
+                    <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-sm v-body v-surface-hover transition-colors"><i class="fa-solid fa-user-circle w-4 v-muted text-xs"></i> My Profile</a>
+                    <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-sm v-body v-surface-hover transition-colors"><i class="fa-solid fa-gear w-4 v-muted text-xs"></i> Settings</a>
+                    <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-2.5 text-sm v-body v-surface-hover transition-colors border-t v-border">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-circle-half-stroke w-4 v-muted text-xs"></i> Theme</span>
+                        <span id="themeLabel" class="text-[10px] font-mono v-muted">Dark</span>
+                    </button>
+                    <button onclick="logout()" class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors border-t v-border">
+                        <i class="fa-solid fa-arrow-right-from-bracket w-4 text-xs"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-7 w-full">
+
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-7">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold v-text tracking-tight">Reader Dashboard</h1>
+            <p class="text-sm v-muted mt-1">Welcome back — here's your water reading summary.</p>
+        </div>
+        <div class="text-right">
+            <p class="text-xs font-semibold v-text" id="headerName">Meter Reader</p>
+            <p class="text-[11px] font-mono v-muted mt-0.5">Zone A · Feb 10–15, 2026</p>
+        </div>
+    </div>
+
+    <!-- ── STAT CARDS ── -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+        <div class="relative stat-accent accent-blue v-card border v-border rounded-xl p-5 overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-glow">
+            <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-3">Total Consumers</p>
+            <p class="text-3xl font-extrabold text-brand-400 tracking-tight leading-none">25</p>
+            <p class="text-[11px] v-muted mt-2">in your zone</p>
+            <i class="fa-solid fa-users absolute top-4 right-4 text-2xl text-brand-500/10"></i>
+        </div>
+
+        <div class="relative stat-accent accent-green v-card border v-border rounded-xl p-5 overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-glowG">
+            <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-3">Completed</p>
+            <p class="text-3xl font-extrabold text-emerald-400 tracking-tight leading-none">18</p>
+            <p class="text-[11px] v-muted mt-2">readings done</p>
+            <i class="fa-solid fa-circle-check absolute top-4 right-4 text-2xl text-emerald-500/10"></i>
+        </div>
+
+        <div class="relative stat-accent accent-amber v-card border v-border rounded-xl p-5 overflow-hidden transition-all hover:-translate-y-0.5">
+            <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-3">Pending</p>
+            <p class="text-3xl font-extrabold text-amber-400 tracking-tight leading-none">7</p>
+            <p class="text-[11px] v-muted mt-2">still today</p>
+            <i class="fa-solid fa-hourglass-half absolute top-4 right-4 text-2xl text-amber-500/10"></i>
+        </div>
+
+        <div class="relative stat-accent accent-cyan v-card border v-border rounded-xl p-5 overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-glowC">
+            <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-3">Completion</p>
+            <p class="text-3xl font-extrabold text-cyan-400 tracking-tight leading-none">72%</p>
+            <p class="text-[11px] v-muted mt-2">on schedule</p>
+            <i class="fa-solid fa-chart-pie absolute top-4 right-4 text-2xl text-cyan-500/10"></i>
+        </div>
+    </div>
+
+    <!-- ── TAB BAR ── -->
+    <div class="flex items-center gap-1 v-surface border v-border rounded-xl p-1 mb-6 w-fit max-w-full overflow-x-auto">
+        <button data-tab="consumers" onclick="switchTab('consumers',this)"
+            class="tab-btn active flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-transparent whitespace-nowrap">
+            <i class="fa-solid fa-users text-[11px]"></i> Consumers
+        </button>
+        <button data-tab="progress" onclick="switchTab('progress',this)"
+            class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-transparent whitespace-nowrap">
+            <i class="fa-solid fa-chart-line text-[11px]"></i> Progress
+        </button>
+        <button data-tab="assignment" onclick="switchTab('assignment',this)"
+            class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-transparent whitespace-nowrap">
+            <i class="fa-solid fa-clipboard-list text-[11px]"></i> Assignment
+        </button>
+    </div>
+
+    <!-- ════════ TAB: CONSUMERS ════════ -->
+    <div id="consumers" class="tab-pane active">
+        <div class="v-card border v-border rounded-xl p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                <h2 class="text-sm font-bold v-text flex items-center gap-2">
+                    <i class="fa-solid fa-users text-brand-400 text-xs"></i> Consumers to Read
+                    <span class="font-mono text-[10px] v-muted v-surface border v-border px-2 py-0.5 rounded-full">25 total</span>
+                </h2>
+                <div class="flex gap-2">
+                    <div class="relative">
+                        <input type="text" id="searchConsumer" placeholder="Search name, account…"
+                            class="v-input border rounded-lg pl-8 pr-3 py-2 text-sm placeholder-muted transition-all w-full sm:w-52">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 v-muted text-xs pointer-events-none"></i>
+                    </div>
+                    <select id="filterStatus" class="v-input border rounded-lg px-3 py-2 text-sm transition-all">
+                        <option value="">All</option>
+                        <option value="pending">Pending</option>
+                        <option value="read">Read</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b v-border">
+                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Meter / Client ID</th>
+                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-sm">Name</th>
+                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-md">Address</th>
+                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-md">Last Reading</th>
+                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Status</th>
+                            <th class="pb-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="consumersTableBody" class="divide-y v-divider">
+
+                        <tr class="v-row-hover transition-colors">
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-8842-A</td>
+                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Maria Santos</td>
+                            <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">123 Mabini St, Brgy 1</td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">1,245 m³ · Feb 7</td>
+                            <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Pending</span></td>
+                            <td class="py-3.5">
+                                <button onclick="openReadingModal('WM-8842-A','Maria Santos','123 Mabini St, Brgy 1','1,245')"
+                                    class="flex items-center gap-1.5 text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all">
+                                    <i class="fa-solid fa-pencil text-[10px]"></i> Read
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="v-row-hover transition-colors">
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-9031-B</td>
+                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Juan dela Cruz</td>
+                            <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">456 Rizal Ave, Brgy 2</td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">2,310 m³ · Feb 7</td>
+                            <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Read</span></td>
+                            <td class="py-3.5">
+                                <button onclick="viewReading('WM-9031-B','Juan dela Cruz','2,310')"
+                                    class="flex items-center gap-1.5 text-xs font-semibold v-muted v-surface v-hover border v-border px-3 py-1.5 rounded-lg transition-all">
+                                    <i class="fa-solid fa-eye text-[10px]"></i> View
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="v-row-hover transition-colors">
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-7741-C</td>
+                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Rosa Garcia</td>
+                            <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">789 Quezon Blvd, Brgy 3</td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">985 m³ · Feb 6</td>
+                            <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Pending</span></td>
+                            <td class="py-3.5">
+                                <button onclick="openReadingModal('WM-7741-C','Rosa Garcia','789 Quezon Blvd, Brgy 3','985')"
+                                    class="flex items-center gap-1.5 text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all">
+                                    <i class="fa-solid fa-pencil text-[10px]"></i> Read
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="v-row-hover transition-colors">
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-6630-D</td>
+                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Pedro Reyes</td>
+                            <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">321 Roxas St, Brgy 4</td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">1,567 m³ · Feb 5</td>
+                            <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Pending</span></td>
+                            <td class="py-3.5">
+                                <button onclick="openReadingModal('WM-6630-D','Pedro Reyes','321 Roxas St, Brgy 4','1,567')"
+                                    class="flex items-center gap-1.5 text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all">
+                                    <i class="fa-solid fa-pencil text-[10px]"></i> Read
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="v-row-hover transition-colors">
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-5512-E</td>
+                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Angela Lopez</td>
+                            <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">654 Magsaysay Rd, Brgy 5</td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">2,101 m³ · Feb 4</td>
+                            <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Read</span></td>
+                            <td class="py-3.5">
+                                <button onclick="viewReading('WM-5512-E','Angela Lopez','2,101')"
+                                    class="flex items-center gap-1.5 text-xs font-semibold v-muted v-surface v-hover border v-border px-3 py-1.5 rounded-lg transition-all">
+                                    <i class="fa-solid fa-eye text-[10px]"></i> View
+                                </button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-5 pt-4 border-t v-border">
+                <p class="text-xs v-muted">Showing 5 of 25 consumers</p>
+                <div class="flex gap-1 text-xs font-mono">
+                    <button class="px-3 py-1.5 v-surface border v-border rounded-lg v-muted hover:v-body transition-all">Prev</button>
+                    <button class="px-3 py-1.5 bg-brand-500 border border-brand-500 rounded-lg text-white font-semibold">1</button>
+                    <button class="px-3 py-1.5 v-surface border v-border rounded-lg v-muted transition-all">2</button>
+                    <button class="px-3 py-1.5 v-surface border v-border rounded-lg v-muted transition-all">3</button>
+                    <button class="px-3 py-1.5 v-surface border v-border rounded-lg v-muted transition-all">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ TAB: PROGRESS ════════ -->
+    <div id="progress" class="tab-pane">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+            <div class="lg:col-span-2 space-y-5">
+
+                <!-- Big % -->
+                <div class="v-card border v-border rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-5">
+                        <h2 class="text-sm font-bold v-text flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-brand-400 text-xs"></i> Reading Progress
+                        </h2>
+                        <select class="v-input border rounded-lg px-3 py-1.5 text-xs transition-all">
+                            <option>Today</option><option>This Week</option><option>This Month</option>
+                        </select>
+                    </div>
+                    <div class="text-center py-10 rounded-lg" style="background:radial-gradient(ellipse at center,rgba(6,182,212,0.07) 0%,transparent 70%);">
+                        <p class="text-6xl font-extrabold text-cyan-400 tracking-tighter leading-none">72%</p>
+                        <p class="text-sm v-muted mt-3">Readings Completed</p>
+                        <p class="text-xs v-muted mt-1">18 of 25 consumers read today</p>
+                    </div>
+                    <div class="mt-5 pt-4 border-t v-border">
+                        <div class="flex items-end gap-2 h-12">
+                            <div class="flex-1 flex flex-col items-center gap-1">
+                                <div class="w-full rounded-t-sm" style="height:60%;background:rgba(59,130,246,0.22)"></div>
+                                <span class="text-[9px] font-mono v-muted">Mon</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center gap-1">
+                                <div class="w-full rounded-t-sm" style="height:80%;background:rgba(59,130,246,0.22)"></div>
+                                <span class="text-[9px] font-mono v-muted">Tue</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center gap-1">
+                                <div class="w-full rounded-t-sm" style="height:72%;background:rgba(59,130,246,0.22)"></div>
+                                <span class="text-[9px] font-mono v-muted">Wed</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center gap-1">
+                                <div class="w-full rounded-t-sm" style="height:90%;background:rgba(59,130,246,0.3)"></div>
+                                <span class="text-[9px] font-mono v-muted">Thu</span>
+                            </div>
+                            <div class="flex-1 flex flex-col items-center gap-1">
+                                <div class="w-full rounded-t-sm bg-cyan-500 shadow-glowC" style="height:100%"></div>
+                                <span class="text-[9px] font-mono text-cyan-400 font-semibold">Today</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Readings Log -->
+                <div class="v-card border v-border rounded-xl p-5">
+                    <h2 class="text-sm font-bold v-text flex items-center gap-2 mb-5">
+                        <i class="fa-solid fa-clock-rotate-left text-brand-400 text-xs"></i> Recent Readings
+                    </h2>
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b v-border">
+                                <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Time</th>
+                                <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-sm">Consumer</th>
+                                <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Reading</th>
+                                <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y v-divider">
+                            <tr class="v-row-hover transition-colors">
+                                <td class="py-3.5 pr-4 font-mono text-xs v-muted">09:30 AM</td>
+                                <td class="py-3.5 pr-4 text-sm v-body hide-sm">Juan dela Cruz</td>
+                                <td class="py-3.5 pr-4 font-mono text-sm font-semibold text-emerald-400">2,310 m³</td>
+                                <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Submitted</span></td>
+                            </tr>
+                            <tr class="v-row-hover transition-colors">
+                                <td class="py-3.5 pr-4 font-mono text-xs v-muted">08:15 AM</td>
+                                <td class="py-3.5 pr-4 text-sm v-body hide-sm">Angela Lopez</td>
+                                <td class="py-3.5 pr-4 font-mono text-sm font-semibold text-emerald-400">2,101 m³</td>
+                                <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Submitted</span></td>
+                            </tr>
+                            <tr class="v-row-hover transition-colors">
+                                <td class="py-3.5 pr-4 font-mono text-xs v-muted">Yesterday</td>
+                                <td class="py-3.5 pr-4 text-sm v-body hide-sm">Maria Santos</td>
+                                <td class="py-3.5 pr-4 font-mono text-sm font-semibold text-emerald-400">1,245 m³</td>
+                                <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Submitted</span></td>
+                            </tr>
+                            <tr class="v-row-hover transition-colors">
+                                <td class="py-3.5 pr-4 font-mono text-xs v-muted">Yesterday</td>
+                                <td class="py-3.5 pr-4 text-sm v-body hide-sm">Pedro Reyes</td>
+                                <td class="py-3.5 pr-4 font-mono text-sm font-semibold text-emerald-400">1,567 m³</td>
+                                <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Submitted</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Today's Summary sidebar -->
+            <div class="space-y-5">
+                <div class="v-card border v-border rounded-xl p-5">
+                    <h2 class="text-sm font-bold v-text flex items-center gap-2 mb-5">
+                        <i class="fa-solid fa-gauge-high text-cyan-400 text-xs"></i> Today's Summary
+                    </h2>
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs v-muted font-medium uppercase tracking-wide">Completed</span>
+                                <span class="font-mono text-sm font-semibold text-emerald-400">12</span>
+                            </div>
+                            <div class="prog-track"><div class="prog-fill bg-emerald-400" style="width:85%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs v-muted font-medium uppercase tracking-wide">Still Pending</span>
+                                <span class="font-mono text-sm font-semibold text-amber-400">2</span>
+                            </div>
+                            <div class="prog-track"><div class="prog-fill bg-amber-400" style="width:15%"></div></div>
+                        </div>
+                        <div class="pt-3 border-t v-border">
+                            <p class="text-xs v-muted uppercase tracking-wide mb-1">Avg. Time / Reading</p>
+                            <p class="font-mono text-lg font-bold text-brand-400">3.5 min</p>
+                        </div>
+                        <div class="pt-3 border-t v-border">
+                            <p class="text-xs v-muted uppercase tracking-wide mb-1">Issues Reported</p>
+                            <p class="font-mono text-lg font-bold text-emerald-400">0</p>
+                            <p class="text-[11px] v-muted mt-0.5">No issues so far today</p>
+                        </div>
+                    </div>
+                    <button onclick="showToast('Data refreshed!','success')"
+                        class="w-full mt-5 flex items-center justify-center gap-2 v-surface v-hover border v-border v-body font-semibold text-sm rounded-lg px-4 py-2.5 transition-all">
+                        <i class="fa-solid fa-rotate text-xs v-muted"></i> Refresh Data
+                    </button>
+                </div>
+
+                <div class="v-tip border rounded-xl p-4">
+                    <p class="text-xs font-semibold text-cyan-400 mb-1.5"><i class="fa-solid fa-lightbulb mr-1.5"></i> Tip</p>
+                    <p class="text-xs v-body leading-relaxed">Search by name, account number, or address. Use the camera scan button for faster OCR readings.</p>
+                    <p class="text-[11px] v-muted mt-2">Contact your supervisor for account access issues.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ TAB: ASSIGNMENT ════════ -->
+    <div id="assignment" class="tab-pane">
+        <div class="v-card border v-border rounded-xl p-5 mb-5">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-sm font-bold v-text flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-list text-brand-400 text-xs"></i> Assignment Details
+                </h2>
+                <button onclick="showToast('Exporting assignment…','info')"
+                    class="flex items-center gap-1.5 text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all">
+                    <i class="fa-solid fa-download text-[10px]"></i> Export
+                </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="v-surface border v-border rounded-xl p-4">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-2">Reading Zone</p>
+                    <p class="text-sm font-bold v-text">Zone A — Barangay 1–5</p>
+                </div>
+                <div class="v-surface border v-border rounded-xl p-4">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-2">Assigned Date</p>
+                    <p class="text-sm font-bold v-text font-mono">Feb 10 – 15, 2026</p>
+                </div>
+                <div class="v-surface border v-border rounded-xl p-4">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-2">Supervisor</p>
+                    <p class="text-sm font-bold v-text">Mr. Ricardo Ching</p>
+                </div>
+                <div class="v-surface border v-border rounded-xl p-4">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-2">Contact</p>
+                    <p class="text-sm font-bold v-text font-mono">0919-1234567</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="v-card border v-border rounded-xl p-5">
+            <h2 class="text-sm font-bold v-text flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-map-location-dot text-brand-400 text-xs"></i> Zone Coverage
+            </h2>
+            <div class="rounded-xl overflow-hidden border v-border flex items-center justify-center relative" style="height:220px;">
+                <div style="position:absolute;inset:0;background:var(--surface);"></div>
+                <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.05) 1px,transparent 1px);background-size:24px 24px;"></div>
+                <div class="text-center relative z-10">
+                    <i class="fa-solid fa-map text-brand-400 text-3xl mb-2 opacity-40"></i>
+                    <p class="text-sm v-muted">Map view coming soon</p>
+                    <p class="text-xs v-muted mt-1">Zone A · 5 Barangays · 25 consumers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer class="border-t v-border mt-12 py-6 text-center">
+    <p class="font-mono text-xs v-muted">© 2026 TUBIGTALA · Polangui Waterworks Services Administration (POWASA)</p>
+</footer>
+
+</div><!-- end z-10 flex wrapper -->
+
+<!-- ═══════════ MODAL: METER READING ═══════════ -->
+<div id="readingModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-md p-0 sm:p-4" style="animation:fadeIn .18s ease-out">
+    <div class="v-card border v-border rounded-t-3xl sm:rounded-2xl w-full sm:max-w-lg shadow-2xl max-h-[95vh] overflow-y-auto" style="animation:slideUp .2s ease-out;border-color:var(--border-hi)!important">
+
+        <!-- Mobile handle -->
+        <div class="flex justify-center pt-3 pb-1 sm:hidden">
+            <div class="w-10 h-1 rounded-full" style="background:var(--muted)"></div>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 pt-4 pb-4 border-b v-border">
+            <div>
+                <h2 class="text-base font-bold v-text">Record Meter Reading</h2>
+                <p class="text-xs v-muted mt-0.5" id="modalSubtitle">WM-8842-A · Maria Santos</p>
+            </div>
+            <button onclick="closeReadingModal()" class="w-7 h-7 rounded-lg border v-border v-muted v-hover flex items-center justify-center text-xs transition-all">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+
+        <div class="px-6 py-5 space-y-4">
+
+            <!-- Read-only info -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="v-surface border v-border rounded-xl p-3">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-1">Meter / Client ID</p>
+                    <p class="font-mono text-sm font-semibold v-body" id="mAccNum">—</p>
+                </div>
+                <div class="v-surface border v-border rounded-xl p-3">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-1">Last Reading</p>
+                    <p class="font-mono text-sm font-semibold text-cyan-400" id="mLastReading">—</p>
+                </div>
+            </div>
+            <div class="v-surface border v-border rounded-xl p-3">
+                <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-1">Consumer / Address</p>
+                <p class="text-sm font-semibold v-body" id="mConsumerName">—</p>
+                <p class="text-xs v-muted mt-0.5" id="mAddress">—</p>
+            </div>
+
+            <!-- Camera scan -->
+            <div>
+                <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-2">Scan Meter via Camera</p>
+                <div id="cameraSection" class="rounded-xl overflow-hidden border v-border v-surface relative" style="min-height:220px;">
+
+                    <!-- Placeholder -->
+                    <div id="cameraPlaceholder" class="flex flex-col items-center justify-center h-full min-h-[220px] gap-4 px-4 py-6">
+                        <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                            <i class="fa-solid fa-camera text-2xl text-cyan-400"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm font-semibold v-body">Scan Water Meter</p>
+                            <p class="text-xs v-muted mt-1">Point your camera at the meter display. OCR will auto-detect the reading.</p>
+                        </div>
+                        <button onclick="openCamera()"
+                            class="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm rounded-xl px-6 py-3 transition-all shadow-glowC">
+                            <i class="fa-solid fa-camera text-xs"></i> Open Camera
+                        </button>
+                    </div>
+
+                    <!-- Camera active -->
+                    <div id="cameraView" class="hidden flex-col h-full relative" style="min-height:280px;">
+                        <video id="cameraFeed" autoplay playsinline class="w-full rounded-t-xl" style="max-height:260px;object-fit:cover;background:#060d1a;"></video>
+                        <div id="scanOverlay" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="absolute inset-0 bg-black/40"></div>
+                            <div class="relative w-64 h-24" style="z-index:2;">
+                                <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
+                                <div class="scan-corner bl"></div><div class="scan-corner br"></div>
+                                <div class="scan-beam"></div>
+                            </div>
+                        </div>
+                        <div class="absolute top-3 left-0 right-0 flex justify-center" style="z-index:3;">
+                            <div class="flex items-center gap-2 bg-black/70 backdrop-blur-sm border border-cyan-500/30 rounded-full px-4 py-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                                <span class="text-xs font-mono font-medium text-cyan-400">Scanning…</span>
+                            </div>
+                        </div>
+                        <div class="p-3 v-surface flex items-center gap-3">
+                            <button onclick="captureFrame()"
+                                class="flex-1 flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm rounded-xl py-3 transition-all shadow-glowC">
+                                <i class="fa-solid fa-camera text-xs"></i> Capture & Read
+                            </button>
+                            <button onclick="closeCamera()"
+                                class="px-4 py-3 v-surface v-hover border v-border v-muted rounded-xl text-sm font-semibold transition-all">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Processing / OCR result -->
+                    <div id="processingView" class="hidden flex-col items-center justify-center gap-3 min-h-[220px] px-6">
+                        <div id="processingSpinner" class="flex flex-col items-center gap-3">
+                            <div class="w-12 h-12 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin"></div>
+                            <p class="text-sm font-semibold v-body">Reading meter display…</p>
+                            <p class="text-xs v-muted">OCR processing in progress</p>
+                        </div>
+                        <div id="ocrResult" class="hidden w-full text-center">
+                            <div class="bg-emerald-400/10 border border-emerald-400/20 rounded-xl p-5 mb-3">
+                                <p class="text-[10px] font-semibold uppercase tracking-widest text-emerald-400/70 mb-2">OCR Reading Detected</p>
+                                <p class="font-mono text-4xl font-extrabold text-emerald-400 tracking-tight" id="ocrValueDisplay">—</p>
+                                <p class="text-xs v-muted mt-1">m³ · Confidence: 97%</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="acceptOCR()" class="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm rounded-xl py-2.5 transition-all">
+                                    <i class="fa-solid fa-check text-xs"></i> Use This
+                                </button>
+                                <button onclick="retryCamera()" class="flex-1 flex items-center justify-center gap-2 v-surface v-hover border v-border v-muted text-sm font-semibold rounded-xl py-2.5 transition-all">
+                                    <i class="fa-solid fa-rotate text-xs"></i> Retry
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="flex items-center gap-3">
+                <div class="flex-1 h-px" style="background:var(--border)"></div>
+                <span class="text-[10px] font-semibold uppercase tracking-widest v-muted">or enter manually</span>
+                <div class="flex-1 h-px" style="background:var(--border)"></div>
+            </div>
+
+            <!-- Manual entry -->
+            <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-widest v-muted mb-1.5">Current Meter Reading (m³) *</label>
+                <div class="flex gap-2">
+                    <input type="number" id="meterReading" step="0.01" placeholder="e.g. 1245.50" required
+                        class="v-input flex-1 border rounded-xl px-4 py-3 text-sm font-mono placeholder-muted transition-all">
+                    <div class="px-3 py-3 v-surface border v-border rounded-xl text-xs font-mono v-muted">m³</div>
+                </div>
+                <p class="text-[11px] v-muted mt-1.5">Enter the 5-digit reading shown on the meter display.</p>
+            </div>
+
+            <!-- Notes -->
+            <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-widest v-muted mb-1.5">Notes / Remarks <span class="v-muted font-normal normal-case tracking-normal">(optional)</span></label>
+                <textarea id="readingNotes" rows="2" placeholder="Any observations, issues, or damage notes…"
+                    class="v-input w-full border rounded-xl px-4 py-3 text-sm placeholder-muted resize-none transition-all"></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3 pt-1">
+                <button onclick="closeReadingModal()"
+                    class="flex-1 py-3 text-sm font-semibold v-muted v-surface v-hover border v-border rounded-xl transition-all">
+                    Cancel
+                </button>
+                <button onclick="submitReading()"
+                    class="flex-1 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl py-3 transition-all hover:shadow-glow">
+                    <i class="fa-solid fa-check text-xs"></i> Submit Reading
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════ MODAL: VIEW READING ═══════════ -->
+<div id="viewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4" style="animation:fadeIn .18s ease-out">
+    <div class="v-card border v-border rounded-2xl w-full max-w-sm shadow-2xl p-6" style="animation:slideUp .2s ease-out;border-color:var(--border-hi)!important">
+        <div class="flex items-center justify-between mb-5">
+            <h2 class="text-base font-bold v-text">Reading Details</h2>
+            <button onclick="closeViewModal()" class="w-7 h-7 rounded-lg border v-border v-muted v-hover flex items-center justify-center text-xs transition-all">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="space-y-3">
+            <div class="v-surface border v-border rounded-xl p-4">
+                <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-1">Meter / Client ID</p>
+                <p class="font-mono text-sm font-semibold v-body" id="viewAccNum">—</p>
+            </div>
+            <div class="v-surface border v-border rounded-xl p-4">
+                <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-1">Consumer</p>
+                <p class="text-sm font-semibold v-body" id="viewName">—</p>
+            </div>
+            <div class="bg-emerald-400/5 border border-emerald-400/20 rounded-xl p-4 text-center">
+                <p class="text-[10px] font-semibold uppercase tracking-widest text-emerald-400/70 mb-2">Meter Reading</p>
+                <p class="font-mono text-4xl font-extrabold text-emerald-400 tracking-tighter" id="viewReadingVal">—</p>
+                <p class="text-xs v-muted mt-1">m³</p>
+            </div>
+            <span class="flex items-center justify-center gap-1.5 text-sm font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded-xl py-2.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Submitted
+            </span>
+        </div>
+        <button onclick="closeViewModal()" class="w-full mt-4 py-2.5 text-sm font-semibold v-muted v-surface v-hover border v-border rounded-xl transition-all">
+            Close
+        </button>
+    </div>
+</div>
+
+<!-- ═══════════ TOAST CONTAINER ═══════════ -->
+<div id="toastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;"></div>
+
+<script>
+    /* ────────────────────────────────────────────────────
+       THEME (matches consumer dashboard exactly)
+    ──────────────────────────────────────────────────── */
+   function applyTheme(m) {
+        const h = document.getElementById('htmlRoot');
+        h.classList.remove('dark','light');
+        h.classList.add(m);
+        localStorage.setItem('tubigtalaTheme', m);
+        const l = document.getElementById('themeLabel');
+        if (l) l.textContent = m === 'dark' ? 'Dark' : 'Light';
+    }
+    function toggleTheme() {
+        applyTheme(document.getElementById('htmlRoot').classList.contains('dark') ? 'light' : 'dark');
+    }
+    (function(){ applyTheme(localStorage.getItem('tubigtalaTheme') || 'dark'); })();
+
+    /* ────────────────────────────────────────────────────
+       CLOCK
+    ──────────────────────────────────────────────────── */
+    function updateClock() {
+        const t = new Date().toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        const el = document.getElementById('navClock');
+        if (el) el.textContent = t;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    /* ────────────────────────────────────────────────────
+       TABS
+    ──────────────────────────────────────────────────── */
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        if (el) el.classList.add('active');
+    }
+
+    /* ────────────────────────────────────────────────────
+       DROPDOWN
+    ──────────────────────────────────────────────────── */
+    function toggleDrop(e) {
+        e.stopPropagation();
+        document.getElementById('dropMenu').classList.toggle('hidden');
+    }
+    document.addEventListener('click', () => {
+        const d = document.getElementById('dropMenu');
+        if (d) d.classList.add('hidden');
+    });
+
+    /* ────────────────────────────────────────────────────
+       LOGOUT
+    ──────────────────────────────────────────────────── */
+   function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+
+        localStorage.clear(); 
+
+        window.location.replace('landing page.html');
+    }
+}
+    /* ────────────────────────────────────────────────────
+       TOAST
+    ──────────────────────────────────────────────────── */
+    function showToast(message, type = 'success', duration = 3500) {
+        const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <i class="fa-solid ${icons[type] || icons.success} toast-icon"></i>
+            <span>${message}</span>
+            <button class="toast-close" onclick="removeToast(this.parentElement)"><i class="fa-solid fa-times" style="font-size:11px"></i></button>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => removeToast(toast), duration);
+    }
+    function removeToast(el) {
+        if (!el || el.classList.contains('removing')) return;
+        el.classList.add('removing');
+        setTimeout(() => el.remove(), 200);
+    }
+
+    /* ────────────────────────────────────────────────────
+       READING MODAL
+    ──────────────────────────────────────────────────── */
+    let currentStream = null;
+
+    function openReadingModal(acc, name, addr, lastReading) {
+        document.getElementById('modalSubtitle').textContent  = `${acc} · ${name}`;
+        document.getElementById('mAccNum').textContent        = acc;
+        document.getElementById('mLastReading').textContent   = `${lastReading} m³`;
+        document.getElementById('mConsumerName').textContent  = name;
+        document.getElementById('mAddress').textContent       = addr;
+        document.getElementById('meterReading').value         = '';
+        document.getElementById('readingNotes').value         = '';
+        showCameraPlaceholder();
+        document.getElementById('readingModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeReadingModal() {
+        closeCamera();
+        document.getElementById('readingModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    document.getElementById('readingModal').addEventListener('click', function(e) {
+        if (e.target === this) closeReadingModal();
+    });
+
+    function showCameraPlaceholder() {
+        document.getElementById('cameraPlaceholder').classList.remove('hidden');
+        document.getElementById('cameraView').classList.add('hidden');
+        document.getElementById('processingView').classList.add('hidden');
+    }
+
+    /* ── Camera ── */
+    async function openCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            currentStream = stream;
+            const feed = document.getElementById('cameraFeed');
+            feed.srcObject = stream;
+            document.getElementById('cameraPlaceholder').classList.add('hidden');
+            document.getElementById('cameraView').classList.remove('hidden');
+            document.getElementById('cameraView').style.display = 'flex';
+            document.getElementById('processingView').classList.add('hidden');
+        } catch (err) {
+            showToast('Camera access denied. Please enter reading manually.', 'error');
+        }
+    }
+
+    function closeCamera() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(t => t.stop());
+            currentStream = null;
+        }
+        showCameraPlaceholder();
+    }
+
+    function captureFrame() {
+        closeCamera();
+        document.getElementById('processingView').classList.remove('hidden');
+        document.getElementById('processingView').style.display = 'flex';
+        document.getElementById('processingSpinner').classList.remove('hidden');
+        document.getElementById('ocrResult').classList.add('hidden');
+
+        // Simulate OCR processing
+        setTimeout(() => {
+            const fakeReading = (Math.floor(Math.random() * 900) + 1100).toString();
+            document.getElementById('ocrValueDisplay').textContent = fakeReading;
+            document.getElementById('processingSpinner').classList.add('hidden');
+            document.getElementById('ocrResult').classList.remove('hidden');
+        }, 1800);
+    }
+
+    function acceptOCR() {
+        const val = document.getElementById('ocrValueDisplay').textContent;
+        document.getElementById('meterReading').value = val;
+        showCameraPlaceholder();
+        showToast(`OCR reading ${val} m³ applied!`, 'success');
+    }
+
+    function retryCamera() {
+        showCameraPlaceholder();
+        setTimeout(() => openCamera(), 100);
+    }
+
+    /* ── Submit Reading ── */
+    function submitReading() {
+        const reading = document.getElementById('meterReading').value.trim();
+        if (!reading) {
+            showToast('Please enter or scan the meter reading first.', 'error');
+            return;
+        }
+        const btn = document.querySelector('[onclick="submitReading()"]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> Submitting…';
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> Submit Reading';
+            closeReadingModal();
+            showToast(`Reading ${reading} m³ submitted successfully!`, 'success');
+        }, 1000);
+    }
+
+    /* ────────────────────────────────────────────────────
+       VIEW READING MODAL
+    ──────────────────────────────────────────────────── */
+    function viewReading(acc, name, reading) {
+        document.getElementById('viewAccNum').textContent    = acc;
+        document.getElementById('viewName').textContent      = name;
+        document.getElementById('viewReadingVal').textContent = reading;
+        document.getElementById('viewModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeViewModal() {
+        document.getElementById('viewModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    document.getElementById('viewModal').addEventListener('click', function(e) {
+        if (e.target === this) closeViewModal();
+    });
+</script>
+
+</body>
+</html>

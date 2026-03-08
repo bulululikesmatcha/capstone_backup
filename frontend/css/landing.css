@@ -1,0 +1,34 @@
+/* DEPRECATED: All styles are now using Tailwind CSS */
+/* Tailwind is loaded via CDN in landing page.html */
+/* This file is kept for reference only */
+
+/* Mobile menu toggle styles (if additional JS functionality is needed) */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background: #444;
+  color: white;
+  transition: left 0.3s ease;
+  padding-top: 60px;
+  z-index: 10;
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}

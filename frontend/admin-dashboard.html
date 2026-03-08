@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUBIGTALA — Admin Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50:  '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        canvas:  '#08101c',
+                        surface: '#0f1a2e',
+                        card:    '#131f35',
+                        cardHov: '#172540',
+                        border:  '#1e2e47',
+                        borderHi:'#2a3f5f',
+                        muted:   '#4a607a',
+                        subtle:  '#64748b',
+                        body:    '#cbd5e1',
+                        heading: '#f1f5f9',
+                    },
+                    boxShadow: {
+                        glow:  '0 0 20px rgba(59,130,246,0.15)',
+                        glowG: '0 0 16px rgba(16,185,129,0.15)',
+                        glowR: '0 0 16px rgba(239,68,68,0.12)',
+                    },
+                    animation: {
+                        'pulse-dot': 'pulseDot 2s ease-in-out infinite',
+                        'fade-in':   'fadeIn 0.2s ease-out',
+                        'slide-up':  'slideUp 0.2s ease-out',
+                        'slide-in':  'slideIn 0.25s ease-out',
+                    },
+                    keyframes: {
+                        pulseDot: {
+                            '0%,100%': { boxShadow: '0 0 0 0 rgba(59,130,246,0.6)' },
+                            '50%':     { boxShadow: '0 0 0 6px rgba(59,130,246,0)' },
+                        },
+                        fadeIn:  { from: { opacity: '0' }, to: { opacity: '1' } },
+                        slideUp: { from: { opacity: '0', transform: 'translateY(6px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+                        slideIn: { from: { opacity: '0', transform: 'translateX(-8px)' }, to: { opacity: '1', transform: 'translateX(0)' } },
+                    },
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
+        body { background-color: #08101c; }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.022) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.022) 1px, transparent 1px);
+            background-size: 44px 44px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            height: 100vh;
+            background: #0b1525;
+            border-right: 1px solid #1e2e47;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59,130,246,0.4), transparent);
+        }
+
+        .main-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: slideUp 0.22s ease-out; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a607a;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 1px solid transparent;
+            margin: 0 10px 2px 10px;
+            white-space: nowrap;
+            position: relative;
+        }
+        .nav-item:hover {
+            background: #131f35;
+            color: #cbd5e1;
+            border-color: #1e2e47;
+        }
+        .nav-item.active {
+            background: rgba(59,130,246,0.12);
+            color: #60a5fa;
+            border-color: rgba(59,130,246,0.25);
+            box-shadow: 0 2px 12px rgba(59,130,246,0.1);
+        }
+        .nav-item.active .nav-icon { color: #3b82f6; }
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            width: 3px;
+            height: 18px;
+            background: #3b82f6;
+            border-radius: 99px;
+        }
+        .nav-icon {
+            width: 16px;
+            text-align: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .progress-track {
+            background: rgba(255,255,255,0.06);
+            border-radius: 999px;
+            height: 3px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 1.2s cubic-bezier(.4,0,.2,1);
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1e2e47; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2a3f5f; }
+
+        .stat-accent::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            border-radius: 12px 12px 0 0;
+        }
+        .stat-accent-blue::before  { background: linear-gradient(90deg, #3b82f6, transparent); }
+        .stat-accent-green::before { background: linear-gradient(90deg, #10b981, transparent); }
+        .stat-accent-red::before   { background: linear-gradient(90deg, #ef4444, transparent); }
+        .stat-accent-purple::before{ background: linear-gradient(90deg, #8b5cf6, transparent); }
+
+        .bar { border-radius: 4px 4px 0 0; transition: height 0.5s ease; }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
+        }
+
+        .template-card:hover { border-color: #3b82f6; background-color: rgba(59,130,246,0.06); }
+        .template-card { transition: all 0.15s ease; }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 40;
+            backdrop-filter: blur(4px);
+        }
+        .sidebar-overlay.active { display: block; }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                top: 0;
+                z-index: 50;
+                transition: left 0.25s ease;
+            }
+            .sidebar.open { left: 0; }
+            .hide-sm { display: none !important; }
+        }
+        @media (max-width: 1024px) {
+            .hide-md { display: none !important; }
+        }
+
+        .topbar { height: 52px; }
+        .profile-card {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(139,92,246,0.07) 100%);
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── CREATE ACCOUNT MODAL STYLES ── */
+        .step-circle {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .step-circle.s-done    { background: #10b981; color: #fff; }
+        .step-circle.s-active  { background: #3b82f6; color: #fff; box-shadow: 0 0 0 4px rgba(59,130,246,0.2); }
+        .step-circle.s-pending { background: #1e2e47; color: #4a607a; border: 1.5px solid #1e2e47; }
+
+        .step-line { flex: 1; height: 2px; background: #1e2e47; transition: background 0.4s ease; }
+        .step-line.sl-done { background: #10b981; }
+
+        .ca-input-prefix {
+            display: flex; align-items: center;
+            background: #08101c; border: 1.5px solid #1e2e47; border-radius: 10px;
+            overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .ca-input-prefix:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+        .ca-prefix-label {
+            padding: 0 12px; font-size: 11px; font-family: 'JetBrains Mono', monospace;
+            color: #4a607a; background: #0f1a2e; border-right: 1px solid #1e2e47;
+            height: 100%; display: flex; align-items: center; white-space: nowrap; font-weight: 600;
+        }
+        .ca-input-prefix input {
+            flex: 1; border: none !important; box-shadow: none !important;
+            border-radius: 0 !important; background: transparent;
+            padding: 11px 14px; font-size: 13px; color: #cbd5e1;
+            font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em;
+        }
+        .ca-input-prefix input::placeholder { color: #4a607a; }
+        .ca-input-prefix:focus-within input { outline: none; }
+
+        .ca-field label {
+            display: block; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: #4a607a; margin-bottom: 6px;
+        }
+        .ca-field input, .ca-field select, .ca-field textarea {
+            width: 100%; background: #08101c;
+            border: 1.5px solid #1e2e47; border-radius: 10px;
+            padding: 11px 14px; font-size: 13px; color: #cbd5e1;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .ca-field input::placeholder, .ca-field select::placeholder, .ca-field textarea::placeholder { color: #4a607a; }
+        .ca-field .hint { font-size: 11px; color: #4a607a; margin-top: 5px; }
+
+        .otp-box {
+            background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.05));
+            border: 1.5px solid rgba(59,130,246,0.25); border-radius: 14px;
+            padding: 24px; text-align: center; position: relative; overflow: hidden;
+        }
+        .otp-box::before {
+            content:''; position:absolute; inset:0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 70%);
+            pointer-events:none;
+        }
+        .otp-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px; font-weight: 600;
+            letter-spacing: 0.25em; color: #60a5fa;
+            text-shadow: 0 0 20px rgba(96,165,250,0.4);
+        }
+        .client-id-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(16,185,129,0.08); border: 1.5px solid rgba(16,185,129,0.25);
+            border-radius: 10px; padding: 10px 16px;
+            font-family: 'JetBrains Mono', monospace; font-size: 14px;
+            font-weight: 600; color: #34d399; width: 100%;
+        }
+        .success-ring {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: rgba(16,185,129,0.12); border: 2px solid rgba(16,185,129,0.3);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto; animation: pop 0.4s cubic-bezier(.16,1,.3,1);
+        }
+        @keyframes pop { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+
+        .ca-step-panel { display: none; }
+        .ca-step-panel.active { display: block; animation: slideUp 0.22s ease-out; }
+
+        .btn-primary-ca {
+            background: #3b82f6; color: #fff; border: none;
+            padding: 12px 20px; border-radius: 10px;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .btn-primary-ca:hover:not(:disabled) { background: #2563eb; box-shadow: 0 0 24px rgba(59,130,246,0.3); }
+        .btn-primary-ca:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-ghost-ca {
+            background: transparent; color: #4a607a; border: 1.5px solid #1e2e47;
+            padding: 12px 20px; border-radius: 10px;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .btn-ghost-ca:hover { background: #131f35; color: #cbd5e1; border-color: #2a3f5f; }
+    </style>
+</head>
+
+<body class="font-sans text-body">
+
+<div class="app-layout">
+
+    <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse-dot"></span>
+                <span class="text-heading font-extrabold text-[15px] tracking-tight">TUBIGTALA</span>
+            </div>
+            <span class="inline-flex items-center text-[9px] font-mono font-medium bg-brand-500/10 text-brand-400 border border-brand-500/20 px-2 py-0.5 rounded-full">Admin</span>
+        </div>
+
+        <div class="mx-3 mt-4 mb-3 p-4 rounded-xl profile-card flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="relative flex-shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold shadow-glow">A</div>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 rounded-full border-2 border-canvas"></span>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm font-bold text-heading truncate">Admin User</p>
+                    <p class="text-[10px] text-muted mt-0.5">System Administrator</p>
+                </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span class="text-[10px] font-medium text-emerald-400">Online</span>
+                </div>
+                <span id="sidebarClock" class="font-mono text-[10px] text-muted">00:00:00</span>
+            </div>
+        </div>
+
+        <p class="px-5 text-[9px] font-bold uppercase tracking-[0.12em] text-muted/60 mb-2 flex-shrink-0">Navigation</p>
+
+        <nav class="flex-1 pb-4">
+            <div class="nav-item active" data-tab="overview" onclick="switchTab('overview', this)">
+                <i class="nav-icon fa-solid fa-chart-line"></i>
+                <span>Overview</span>
+                <span class="ml-auto text-[9px] font-mono bg-brand-500/15 text-brand-400 px-1.5 py-0.5 rounded-md">Live</span>
+            </div>
+            <div class="nav-item" data-tab="rates" onclick="switchTab('rates', this)">
+                <i class="nav-icon fa-solid fa-sliders"></i>
+                <span>Rates</span>
+            </div>
+            <div class="nav-item" data-tab="consumers" onclick="switchTab('consumers', this)">
+                <i class="nav-icon fa-solid fa-users"></i>
+                <span>Consumers</span>
+                <span class="ml-auto text-[9px] font-mono text-muted/70">245</span>
+            </div>
+            <div class="nav-item" data-tab="billing" onclick="switchTab('billing', this)">
+                <i class="nav-icon fa-solid fa-receipt"></i>
+                <span>Billing</span>
+                <span class="ml-auto w-1.5 h-1.5 rounded-full bg-red-400"></span>
+            </div>
+            <div class="nav-item" data-tab="notices" onclick="switchTab('notices', this)">
+                <i class="nav-icon fa-solid fa-bell"></i>
+                <span>Notices</span>
+            </div>
+
+            <div class="mx-3 my-3 h-px bg-border"></div>
+            <p class="px-5 text-[9px] font-bold uppercase tracking-[0.12em] text-muted/60 mb-2">Account</p>
+
+            <div class="nav-item">
+                <i class="nav-icon fa-solid fa-user-circle"></i>
+                <span>My Profile</span>
+            </div>
+            <div class="nav-item">
+                <i class="nav-icon fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </div>
+            <div class="nav-item">
+                <i class="nav-icon fa-solid fa-chart-bar"></i>
+                <span>Reports</span>
+            </div>
+        </nav>
+
+        <div class="p-3 border-t border-border flex-shrink-0">
+            <button onclick="logout()" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-semibold text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-all">
+                <i class="fa-solid fa-arrow-right-from-bracket text-xs w-4 text-center"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ═══════════════════ MAIN AREA ═══════════════════ -->
+    <div class="main-area flex flex-col">
+
+        <header class="topbar sticky top-0 z-30 border-b border-border bg-canvas/90 backdrop-blur-xl flex items-center px-5 sm:px-6 gap-3 flex-shrink-0">
+            <button onclick="toggleSidebar()" class="md:hidden w-8 h-8 flex items-center justify-center rounded-lg border border-border text-muted hover:text-body hover:border-borderHi transition-all">
+                <i class="fa-solid fa-bars text-xs"></i>
+            </button>
+            <div class="flex-1">
+                <h1 class="text-sm font-bold text-heading" id="pageTitle">Overview</h1>
+                <p class="text-[10px] text-muted hidden sm:block">TUBIGTALA water billing system</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="hidden sm:flex items-center gap-1.5 bg-surface border border-border rounded-lg px-3 py-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-[10px] font-mono font-medium text-emerald-400">Operational</span>
+                </div>
+                <div class="hidden sm:block bg-surface border border-border rounded-lg px-3 py-1.5">
+                    <span class="font-mono text-[10px] text-muted" id="topbarDate">—</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 px-5 sm:px-6 py-6 max-w-6xl w-full mx-auto">
+
+            <!-- ── STAT CARDS ── -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="relative stat-accent stat-accent-blue bg-card border border-border rounded-xl p-4 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-borderHi hover:shadow-glow">
+                    <p class="text-[9px] font-semibold uppercase tracking-widest text-muted mb-2">Total Customers</p>
+                    <p class="text-2xl font-extrabold text-brand-400 tracking-tight leading-none">245</p>
+                    <p class="text-[10px] text-muted mt-1.5">active accounts</p>
+                    <i class="fa-solid fa-users absolute top-3.5 right-3.5 text-xl text-brand-500/10"></i>
+                </div>
+                <div class="relative stat-accent stat-accent-green bg-card border border-border rounded-xl p-4 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-borderHi hover:shadow-glowG">
+                    <p class="text-[9px] font-semibold uppercase tracking-widest text-muted mb-2">Monthly Revenue</p>
+                    <p class="text-2xl font-extrabold text-emerald-400 tracking-tight leading-none">₱48.5k</p>
+                    <p class="text-[10px] text-muted mt-1.5">+12% from last month</p>
+                    <i class="fa-solid fa-arrow-trend-up absolute top-3.5 right-3.5 text-xl text-emerald-500/10"></i>
+                </div>
+                <div class="relative stat-accent stat-accent-red bg-card border border-border rounded-xl p-4 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-borderHi hover:shadow-glowR">
+                    <p class="text-[9px] font-semibold uppercase tracking-widest text-muted mb-2">Overdue Accounts</p>
+                    <p class="text-2xl font-extrabold text-red-400 tracking-tight leading-none">23</p>
+                    <p class="text-[10px] text-muted mt-1.5">pending collection</p>
+                    <i class="fa-solid fa-triangle-exclamation absolute top-3.5 right-3.5 text-xl text-red-500/10"></i>
+                </div>
+                <div class="relative stat-accent stat-accent-purple bg-card border border-border rounded-xl p-4 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-borderHi">
+                    <p class="text-[9px] font-semibold uppercase tracking-widest text-muted mb-2">System Status</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-base font-bold text-heading">Operational</span>
+                    </div>
+                    <p class="text-[10px] text-muted mt-1.5">99.8% uptime</p>
+                    <i class="fa-solid fa-server absolute top-3.5 right-3.5 text-xl text-purple-500/10"></i>
+                </div>
+            </div>
+
+            <!-- ════════ TAB: OVERVIEW ════════ -->
+            <div id="overview" class="tab-pane active">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
+                    <div class="lg:col-span-2 bg-card border border-border rounded-xl p-5">
+                        <div class="flex items-center justify-between mb-5">
+                            <h2 class="text-sm font-bold text-heading flex items-center gap-2">
+                                <i class="fa-solid fa-chart-bar text-brand-400 text-xs"></i> Monthly Revenue
+                            </h2>
+                            <span class="text-[10px] font-mono font-medium text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">Feb 2026</span>
+                        </div>
+                        <div class="text-center py-6 rounded-lg" style="background:radial-gradient(ellipse at center, rgba(59,130,246,0.07) 0%, transparent 70%);">
+                            <p class="text-4xl font-extrabold text-brand-400 tracking-tighter leading-none">₱48,500</p>
+                            <p class="text-sm text-muted mt-2">245 customers · ₱198 avg rate / m³</p>
+                            <span class="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-3 py-1 rounded-full">
+                                <i class="fa-solid fa-arrow-up text-[10px]"></i> 12% from last month
+                            </span>
+                        </div>
+                        <div class="mt-5 pt-4 border-t border-border">
+                            <div class="flex items-end gap-2 h-14">
+                                <div class="flex-1 flex flex-col items-center gap-1"><div class="bar w-full bg-muted/30" style="height:52%"></div><span class="text-[9px] font-mono text-muted">Oct</span></div>
+                                <div class="flex-1 flex flex-col items-center gap-1"><div class="bar w-full bg-muted/30" style="height:63%"></div><span class="text-[9px] font-mono text-muted">Nov</span></div>
+                                <div class="flex-1 flex flex-col items-center gap-1"><div class="bar w-full bg-muted/30" style="height:72%"></div><span class="text-[9px] font-mono text-muted">Dec</span></div>
+                                <div class="flex-1 flex flex-col items-center gap-1"><div class="bar w-full bg-muted/40" style="height:82%"></div><span class="text-[9px] font-mono text-muted">Jan</span></div>
+                                <div class="flex-1 flex flex-col items-center gap-1"><div class="bar w-full bg-brand-500 shadow-glow" style="height:100%"></div><span class="text-[9px] font-mono text-brand-400 font-medium">Feb</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-card border border-border rounded-xl p-5">
+                        <h2 class="text-sm font-bold text-heading flex items-center gap-2 mb-5">
+                            <i class="fa-solid fa-gauge-high text-purple-400 text-xs"></i> Key Metrics
+                        </h2>
+                        <div class="space-y-5">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-xs text-muted font-medium uppercase tracking-wide">Collection Rate</span>
+                                    <span class="font-mono text-sm font-semibold text-emerald-400">88%</span>
+                                </div>
+                                <div class="progress-track"><div class="progress-fill bg-emerald-400" style="width:88%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-xs text-muted font-medium uppercase tracking-wide">System Uptime</span>
+                                    <span class="font-mono text-sm font-semibold text-brand-400">99.8%</span>
+                                </div>
+                                <div class="progress-track"><div class="progress-fill bg-brand-500" style="width:99.8%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-xs text-muted font-medium uppercase tracking-wide">Avg. Reading Days</span>
+                                    <span class="font-mono text-sm font-semibold text-purple-400">28d</span>
+                                </div>
+                                <div class="progress-track"><div class="progress-fill bg-purple-400" style="width:75%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-xs text-muted font-medium uppercase tracking-wide">Overdue Rate</span>
+                                    <span class="font-mono text-sm font-semibold text-red-400">12%</span>
+                                </div>
+                                <div class="progress-track"><div class="progress-fill bg-red-400" style="width:12%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-5">
+                        <h2 class="text-sm font-bold text-heading flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-brand-400 text-xs"></i> Recent Transactions
+                        </h2>
+                        <span class="text-[11px] text-muted">Last 7 days</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-border">
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Date</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4 hide-sm">Consumer</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4 hide-md">Account</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Amount</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border/50">
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">Feb 28</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Maria Santos</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-md">WM-8842-A</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm font-semibold text-emerald-400">₱198</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Paid</span></td>
+                                </tr>
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">Feb 27</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Juan dela Cruz</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-md">WM-9031-B</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm font-semibold text-emerald-400">₱248</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Paid</span></td>
+                                </tr>
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">Feb 26</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Angela Lopez</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-md">WM-5521-C</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm font-semibold text-emerald-400">₱178</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Paid</span></td>
+                                </tr>
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">Feb 24</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Carlos Gomez</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-md">WM-6630-D</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm font-semibold text-red-400">₱396</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-400 bg-red-400/10 border border-red-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Overdue</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════ TAB: RATES ════════ -->
+            <div id="rates" class="tab-pane">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="bg-card border border-border rounded-xl p-5">
+                        <h2 class="text-sm font-bold text-heading flex items-center gap-2 mb-5">
+                            <i class="fa-solid fa-pen-to-square text-brand-400 text-xs"></i> Update Base Rate
+                        </h2>
+                        <form onsubmit="updateRate(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Current Rate (₱/m³)</label>
+                                <div class="flex gap-2">
+                                    <input type="number" value="198" readonly class="flex-1 bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-muted opacity-60 cursor-not-allowed">
+                                    <div class="px-3 py-2.5 bg-surface border border-border rounded-lg text-xs font-mono text-muted whitespace-nowrap">₱/m³</div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">New Rate (₱/m³) *</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="newRate" step="0.01" placeholder="e.g. 210" required class="flex-1 bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-body placeholder-muted transition-all">
+                                    <div class="px-3 py-2.5 bg-surface border border-border rounded-lg text-xs font-mono text-muted whitespace-nowrap">₱/m³</div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Effective Date *</label>
+                                <input type="date" id="effectiveDate" required class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-body transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Notes / Reason</label>
+                                <textarea id="rateNotes" rows="3" placeholder="Add reason for this rate change..." class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body placeholder-muted transition-all resize-none"></textarea>
+                            </div>
+                            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm rounded-lg px-4 py-2.5 transition-all hover:shadow-glow">
+                                <i class="fa-solid fa-check text-xs"></i> Update Rate
+                            </button>
+                        </form>
+                    </div>
+                    <div class="bg-card border border-border rounded-xl p-5">
+                        <h2 class="text-sm font-bold text-heading flex items-center gap-2 mb-5">
+                            <i class="fa-solid fa-timeline text-brand-400 text-xs"></i> Rate History
+                        </h2>
+                        <div class="space-y-1">
+                            <div class="flex gap-4 py-4 border-b border-border/50">
+                                <div class="flex flex-col items-center pt-1">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-500 shadow-glow mt-0.5"></div>
+                                    <div class="w-px flex-1 bg-border mt-2"></div>
+                                </div>
+                                <div class="flex-1 pb-2">
+                                    <p class="font-mono text-base font-semibold text-brand-400">₱198 / m³</p>
+                                    <p class="text-xs text-muted mt-0.5">Effective Feb 1, 2026</p>
+                                    <span class="inline-block mt-1.5 text-[10px] font-semibold bg-brand-500/10 text-brand-400 border border-brand-500/20 px-2 py-0.5 rounded-full">Current</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 py-4 border-b border-border/50">
+                                <div class="flex flex-col items-center pt-1"><div class="w-2 h-2 rounded-full bg-muted mt-0.5"></div><div class="w-px flex-1 bg-border mt-2"></div></div>
+                                <div class="flex-1 pb-2"><p class="font-mono text-base font-medium text-body">₱185 / m³</p><p class="text-xs text-muted mt-0.5">Effective Jan 1, 2026</p></div>
+                            </div>
+                            <div class="flex gap-4 py-4 border-b border-border/50">
+                                <div class="flex flex-col items-center pt-1"><div class="w-2 h-2 rounded-full bg-muted mt-0.5"></div><div class="w-px flex-1 bg-border mt-2"></div></div>
+                                <div class="flex-1 pb-2"><p class="font-mono text-base font-medium text-body">₱175 / m³</p><p class="text-xs text-muted mt-0.5">Effective Dec 1, 2025</p></div>
+                            </div>
+                            <div class="flex gap-4 py-4">
+                                <div class="flex flex-col items-center pt-1"><div class="w-2 h-2 rounded-full bg-muted mt-0.5"></div></div>
+                                <div class="flex-1"><p class="font-mono text-base font-medium text-body">₱160 / m³</p><p class="text-xs text-muted mt-0.5">Effective Oct 1, 2025</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════ TAB: CONSUMERS ════════ -->
+            <div id="consumers" class="tab-pane">
+                <div class="bg-card border border-border rounded-xl p-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                        <h2 class="text-sm font-bold text-heading flex items-center gap-2">
+                            <i class="fa-solid fa-users text-brand-400 text-xs"></i> Consumer Accounts
+                            <span class="font-mono text-[10px] text-muted bg-surface border border-border px-2 py-0.5 rounded-full">245 total</span>
+                        </h2>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="relative">
+                                <input type="text" placeholder="Search name or meter..." class="bg-canvas border border-border rounded-lg pl-8 pr-3 py-2 text-sm text-body placeholder-muted transition-all w-full sm:w-48">
+                                <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-muted text-xs pointer-events-none"></i>
+                            </div>
+                            <select class="bg-canvas border border-border rounded-lg px-3 py-2 text-sm text-body transition-all">
+                                <option value="">All Status</option>
+                                <option>Active</option>
+                                <option>Inactive</option>
+                                <option>Overdue</option>
+                                <option>No Account</option>
+                            </select>
+                            <!-- CREATE ACCOUNT BUTTON -->
+                            <button onclick="openCreateAccountModal()" class="flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/18 text-emerald-400 border border-emerald-500/25 hover:border-emerald-500/40 rounded-lg px-3 py-2 text-xs font-bold transition-all">
+                                <i class="fa-solid fa-user-plus text-[10px]"></i> Create Account
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-border">
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Meter Serial / Client ID</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4 hide-sm">Name</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4 hide-md">Contact</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Status</th>
+                                    <th class="pb-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border/50">
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">WM-8842-A</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Maria Santos</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-md">09171234567</td>
+                                    <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active</span></td>
+                                    <td class="py-3.5"><button onclick="viewConsumer('WM-8842-A','Maria Santos')" class="text-xs font-semibold text-brand-400 hover:text-brand-300 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5"><i class="fa-solid fa-eye text-[10px]"></i> View</button></td>
+                                </tr>
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">WM-9031-B</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Juan dela Cruz</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-md">09189876543</td>
+                                    <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active</span></td>
+                                    <td class="py-3.5"><button onclick="viewConsumer('WM-9031-B','Juan dela Cruz')" class="text-xs font-semibold text-brand-400 hover:text-brand-300 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5"><i class="fa-solid fa-eye text-[10px]"></i> View</button></td>
+                                </tr>
+                                <tr class="hover:bg-amber-500/5 bg-amber-500/[0.02] transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">WM-7741-C</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Rosa Garcia</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-md">09154567890</td>
+                                    <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>No Account</span></td>
+                                    <td class="py-3.5"><button onclick="openCreateAccountModalPrefilled('WM-7741-C','Rosa','Garcia','Zone A')" class="text-xs font-semibold text-emerald-400 bg-emerald-400/10 hover:bg-emerald-400/20 border border-emerald-400/20 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5"><i class="fa-solid fa-plus text-[10px]"></i> Create</button></td>
+                                </tr>
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">WM-6630-D</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Pedro Reyes</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-md">09201239876</td>
+                                    <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active</span></td>
+                                    <td class="py-3.5"><button onclick="viewConsumer('WM-6630-D','Pedro Reyes')" class="text-xs font-semibold text-brand-400 hover:text-brand-300 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5"><i class="fa-solid fa-eye text-[10px]"></i> View</button></td>
+                                </tr>
+                                <tr class="hover:bg-red-500/5 bg-red-500/[0.03] transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">WM-5512-E</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Carlos Gomez</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-md">09155559999</td>
+                                    <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-400 bg-red-400/10 border border-red-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Overdue</span></td>
+                                    <td class="py-3.5"><button onclick="viewConsumer('WM-5512-E','Carlos Gomez')" class="text-xs font-semibold text-brand-400 hover:text-brand-300 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5"><i class="fa-solid fa-eye text-[10px]"></i> View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════ TAB: BILLING ════════ -->
+            <div id="billing" class="tab-pane">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="lg:col-span-2 space-y-5">
+                        <div class="bg-card border border-border rounded-xl p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-sm font-bold text-heading flex items-center gap-2">
+                                    <i class="fa-solid fa-chart-pie text-brand-400 text-xs"></i> Payment Summary
+                                </h2>
+                                <span class="font-mono text-[10px] text-muted bg-surface border border-border px-2 py-0.5 rounded-full">Feb 2026</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-emerald-400/5 border border-emerald-400/15 rounded-xl p-4">
+                                    <p class="text-[10px] font-semibold uppercase tracking-widest text-emerald-400/70 mb-2">Collected</p>
+                                    <p class="font-mono text-2xl font-bold text-emerald-400">₱42,840</p>
+                                    <p class="text-[11px] text-muted mt-1">88% · 233 accounts</p>
+                                </div>
+                                <div class="bg-red-400/5 border border-red-400/15 rounded-xl p-4">
+                                    <p class="text-[10px] font-semibold uppercase tracking-widest text-red-400/70 mb-2">Overdue</p>
+                                    <p class="font-mono text-2xl font-bold text-red-400">₱5,660</p>
+                                    <p class="text-[11px] text-muted mt-1">12% · 12 accounts</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-card border border-border rounded-xl p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-sm font-bold text-heading flex items-center gap-2">
+                                    <i class="fa-solid fa-triangle-exclamation text-red-400 text-xs"></i> Overdue Accounts
+                                </h2>
+                                <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-400 bg-red-400/10 border border-red-400/20 px-2.5 py-0.5 rounded-full">23 total</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-border">
+                                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Meter / Client ID</th>
+                                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4 hide-sm">Customer</th>
+                                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Amount</th>
+                                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Days</th>
+                                            <th class="pb-3"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-border/50">
+                                        <tr class="bg-red-500/[0.04] hover:bg-red-500/[0.07] transition-colors">
+                                            <td class="py-3.5 pr-4 font-mono text-xs text-muted">WM-5512-E</td>
+                                            <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Carlos Gomez</td>
+                                            <td class="py-3.5 pr-4 font-mono text-sm font-bold text-red-400">₱396</td>
+                                            <td class="py-3.5 pr-4 font-mono text-xs text-amber-400 font-medium">45d</td>
+                                            <td class="py-3.5"><button onclick="sendNotice('WM-5512-E')" class="text-xs font-semibold text-red-400 bg-red-400/10 hover:bg-red-400/20 border border-red-400/20 px-3 py-1.5 rounded-lg transition-all">Notify</button></td>
+                                        </tr>
+                                        <tr class="bg-red-500/[0.04] hover:bg-red-500/[0.07] transition-colors">
+                                            <td class="py-3.5 pr-4 font-mono text-xs text-muted">WM-4401-F</td>
+                                            <td class="py-3.5 pr-4 text-sm font-medium text-body hide-sm">Lito Manalo</td>
+                                            <td class="py-3.5 pr-4 font-mono text-sm font-bold text-red-400">₱198</td>
+                                            <td class="py-3.5 pr-4 font-mono text-xs text-amber-400 font-medium">30d</td>
+                                            <td class="py-3.5"><button onclick="sendNotice('WM-4401-F')" class="text-xs font-semibold text-red-400 bg-red-400/10 hover:bg-red-400/20 border border-red-400/20 px-3 py-1.5 rounded-lg transition-all">Notify</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-card border border-border rounded-xl p-5 h-fit">
+                        <h2 class="text-sm font-bold text-heading flex items-center gap-2 mb-5">
+                            <i class="fa-solid fa-bolt text-amber-400 text-xs"></i> Quick Actions
+                        </h2>
+                        <div class="space-y-2.5">
+                            <button onclick="switchTab('notices', document.querySelector('[data-tab=notices]'))"
+                                class="w-full flex items-center gap-2.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm rounded-lg px-4 py-2.5 transition-all hover:shadow-glow justify-center">
+                                <i class="fa-solid fa-bell text-xs"></i> Send Batch Notices
+                            </button>
+                            <button onclick="generateBillingReport()"
+                                class="w-full flex items-center gap-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-semibold text-sm rounded-lg px-4 py-2.5 transition-all justify-center">
+                                <i class="fa-solid fa-file-arrow-down text-xs"></i> Generate Report
+                            </button>
+                            <button class="w-full flex items-center gap-2.5 bg-surface hover:bg-cardHov text-body border border-border font-semibold text-sm rounded-lg px-4 py-2.5 transition-all justify-center">
+                                <i class="fa-solid fa-rotate text-xs"></i> Process Payments
+                            </button>
+                        </div>
+                        <div class="mt-5 pt-4 border-t border-border">
+                            <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-2">Last Billing Run</p>
+                            <p class="font-mono text-sm font-medium text-body">Feb 15, 2026</p>
+                            <p class="font-mono text-xs text-muted mt-0.5">00:05 AM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════ TAB: NOTICES ════════ -->
+            <div id="notices" class="tab-pane">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
+                    <div class="lg:col-span-2 bg-card border border-border rounded-xl p-5">
+                        <h2 class="text-sm font-bold text-heading flex items-center gap-2 mb-5">
+                            <i class="fa-solid fa-paper-plane text-brand-400 text-xs"></i> Compose Notice
+                        </h2>
+                        <form onsubmit="submitNotice(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Recipients *</label>
+                                <select id="noticeRecipient" required class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body transition-all">
+                                    <option value="">Select recipients...</option>
+                                    <option value="overdue">Overdue Accounts Only</option>
+                                    <option value="all">All Customers</option>
+                                    <option value="inactive">Inactive Accounts</option>
+                                    <option value="custom">Custom Selection</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Notice Type *</label>
+                                <select id="noticeType" required class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body transition-all">
+                                    <option value="">Select type...</option>
+                                    <option value="overdue_warning">Overdue Warning</option>
+                                    <option value="maintenance">System Maintenance</option>
+                                    <option value="rate_change">Rate Change</option>
+                                    <option value="general">General Announcement</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Subject *</label>
+                                <input type="text" id="noticeSubject" placeholder="Enter subject line..." required class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body placeholder-muted transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Message *</label>
+                                <textarea id="noticeMessage" rows="5" placeholder="Write your message..." required class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body placeholder-muted resize-none transition-all"></textarea>
+                            </div>
+                            <div class="flex gap-3">
+                                <button type="submit" class="flex-1 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm rounded-lg px-4 py-2.5 transition-all hover:shadow-glow">
+                                    <i class="fa-solid fa-paper-plane text-xs"></i> Send Notice
+                                </button>
+                                <button type="reset" class="px-4 py-2.5 text-sm font-semibold text-muted bg-surface hover:bg-cardHov border border-border rounded-lg transition-all">Clear</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-card border border-border rounded-xl p-5 h-fit">
+                        <h2 class="text-sm font-bold text-heading flex items-center gap-2 mb-4">
+                            <i class="fa-solid fa-file-lines text-purple-400 text-xs"></i> Templates
+                        </h2>
+                        <div class="space-y-2.5">
+                            <div onclick="loadTemplate('overdue')" class="template-card border border-border rounded-lg p-3.5 cursor-pointer">
+                                <p class="text-sm font-semibold text-body">⚠️ Overdue Warning</p>
+                                <p class="text-xs text-muted mt-0.5">Pre-written payment reminder</p>
+                            </div>
+                            <div onclick="loadTemplate('maintenance')" class="template-card border border-border rounded-lg p-3.5 cursor-pointer">
+                                <p class="text-sm font-semibold text-body">🔧 Maintenance Alert</p>
+                                <p class="text-xs text-muted mt-0.5">System downtime notification</p>
+                            </div>
+                            <div onclick="loadTemplate('ratechange')" class="template-card border border-border rounded-lg p-3.5 cursor-pointer">
+                                <p class="text-sm font-semibold text-body">📋 Rate Change</p>
+                                <p class="text-xs text-muted mt-0.5">Notify about updated water rates</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card border border-border rounded-xl p-5">
+                    <h2 class="text-sm font-bold text-heading flex items-center gap-2 mb-5">
+                        <i class="fa-solid fa-list-check text-brand-400 text-xs"></i> Recent Notices Sent
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-border">
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Date</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4 hide-sm">Type</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Subject</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Recipients</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border/50">
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">Feb 25</td>
+                                    <td class="py-3.5 pr-4 text-sm text-body hide-sm">Overdue Warning</td>
+                                    <td class="py-3.5 pr-4 text-xs text-muted max-w-xs truncate">Payment Reminder — Account Overdue</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-body">23</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Delivered</span></td>
+                                </tr>
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">Feb 20</td>
+                                    <td class="py-3.5 pr-4 text-sm text-body hide-sm">Rate Change</td>
+                                    <td class="py-3.5 pr-4 text-xs text-muted max-w-xs truncate">Water Rate Update — March 2026</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-body">245</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Delivered</span></td>
+                                </tr>
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">Feb 10</td>
+                                    <td class="py-3.5 pr-4 text-sm text-body hide-sm">Maintenance</td>
+                                    <td class="py-3.5 pr-4 text-xs text-muted max-w-xs truncate">Scheduled System Maintenance</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-body">245</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Delivered</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 pt-5 border-t border-border text-center">
+                <p class="font-mono text-xs text-muted">© 2026 TUBIGTALA — Water Meter Scanning & Billing System · POWASA</p>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ═══════════════════ MODAL: VIEW CONSUMER ═══════════════════ -->
+<div id="consumerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+    <div class="bg-card border border-borderHi rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[85vh] overflow-y-auto animate-slide-up">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-base font-bold text-heading">Consumer Profile</h2>
+            <button onclick="closeConsumerModal()" class="w-7 h-7 rounded-lg border border-border text-muted hover:text-body hover:border-borderHi transition-all flex items-center justify-center text-xs">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="grid grid-cols-2 gap-4 p-4 bg-canvas border border-border rounded-xl mb-5">
+            <div>
+                <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-1">Client ID / Meter</p>
+                <p class="font-mono text-sm font-semibold text-body" id="modalAccountNum">—</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-1">Name</p>
+                <p class="text-sm font-semibold text-body" id="modalConsumerName">—</p>
+            </div>
+        </div>
+        <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-3">Billing History</p>
+        <div class="space-y-2.5 mb-5">
+            <div class="flex items-center justify-between p-4 bg-canvas border border-border rounded-xl">
+                <div><p class="text-sm font-semibold text-body">February 2026</p><p class="text-xs text-muted mt-0.5">Issued Feb 15, 2026</p></div>
+                <div class="flex items-center gap-3">
+                    <span class="font-mono text-sm font-bold text-emerald-400">₱198</span>
+                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Paid</span>
+                </div>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-canvas border border-border rounded-xl">
+                <div><p class="text-sm font-semibold text-body">January 2026</p><p class="text-xs text-muted mt-0.5">Issued Jan 15, 2026</p></div>
+                <div class="flex items-center gap-3">
+                    <span class="font-mono text-sm font-bold text-emerald-400">₱185</span>
+                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Paid</span>
+                </div>
+            </div>
+        </div>
+        <button onclick="closeConsumerModal()" class="w-full py-2.5 text-sm font-semibold text-muted bg-surface hover:bg-cardHov border border-border rounded-xl transition-all">Close</button>
+    </div>
+</div>
+
+<!-- ═══════════════════ MODAL: CREATE CONSUMER ACCOUNT ═══════════════════ -->
+<div id="createAccountModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-fade-in">
+    <div class="bg-card border border-borderHi rounded-t-2xl sm:rounded-2xl w-full sm:max-w-lg shadow-2xl max-h-[92vh] overflow-y-auto animate-slide-up" style="box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(59,130,246,0.1);">
+
+        <!-- Header -->
+        <div class="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between z-10 rounded-t-2xl">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-brand-500/15 border border-brand-500/25 flex items-center justify-center">
+                    <i class="fa-solid fa-user-plus text-brand-400 text-xs"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-heading">Create Consumer Account</h2>
+                    <p class="text-[10px] text-muted">Step <span id="caStepDisplay">1</span> of 3</p>
+                </div>
+            </div>
+            <button onclick="closeCreateAccountModal()" class="w-7 h-7 rounded-lg border border-border text-muted hover:text-body hover:border-borderHi transition-all flex items-center justify-center text-xs">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Step Indicators -->
+        <div class="px-6 py-4 border-b border-border">
+            <div class="flex items-center gap-2">
+                <div class="flex flex-col items-center gap-1.5 min-w-fit">
+                    <div class="step-circle s-active" id="casc1">1</div>
+                    <span class="text-[9px] font-semibold text-brand-400 uppercase tracking-wide" id="casl1">Meter Info</span>
+                </div>
+                <div class="step-line" id="caline1"></div>
+                <div class="flex flex-col items-center gap-1.5 min-w-fit">
+                    <div class="step-circle s-pending" id="casc2">2</div>
+                    <span class="text-[9px] font-semibold text-muted uppercase tracking-wide" id="casl2">Consumer</span>
+                </div>
+                <div class="step-line" id="caline2"></div>
+                <div class="flex flex-col items-center gap-1.5 min-w-fit">
+                    <div class="step-circle s-pending" id="casc3">3</div>
+                    <span class="text-[9px] font-semibold text-muted uppercase tracking-wide" id="casl3">Credentials</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="px-6 py-5">
+
+            <!-- STEP 1: Meter Info -->
+            <div id="caStep1" class="ca-step-panel active">
+                <div class="mb-5">
+                    <h3 class="text-sm font-bold text-heading mb-1">Water Meter Details</h3>
+                    <p class="text-xs text-muted">The meter serial number becomes the consumer's Client ID for login.</p>
+                </div>
+
+                <div class="ca-field mb-4">
+                    <label>Meter Serial Number <span class="text-red-400 font-normal normal-case">*</span></label>
+                    <div class="ca-input-prefix">
+                        <span class="ca-prefix-label">WM —</span>
+                        <input type="text" id="ca_meterSerial" placeholder="e.g. 8842-A" oninput="caUpdateClientIdPreview(this.value)" autocomplete="off" spellcheck="false">
+                    </div>
+                    <p class="hint"><i class="fa-solid fa-circle-info text-brand-400 mr-1"></i> This becomes the consumer's <strong class="text-body">Client ID</strong> — used to log in.</p>
+                </div>
+
+                <div class="ca-field mb-4">
+                    <label>Meter Type <span class="text-red-400 font-normal normal-case">*</span></label>
+                    <select id="ca_meterType">
+                        <option value="">Select meter type...</option>
+                        <option value="Residential">Residential</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Bulk / Industrial">Bulk / Industrial</option>
+                    </select>
+                </div>
+
+                <div class="ca-field mb-4">
+                    <label>Service Zone <span class="text-red-400 font-normal normal-case">*</span></label>
+                    <select id="ca_serviceZone">
+                        <option value="">Select zone...</option>
+                        <option value="Zone A">Zone A — Barangay 1</option>
+                        <option value="Zone B">Zone B — Barangay 2</option>
+                        <option value="Zone C">Zone C — Barangay 3</option>
+                        <option value="Zone D">Zone D — Barangay 4</option>
+                    </select>
+                </div>
+
+                <div class="ca-field mb-5">
+                    <label>Initial Meter Reading (m³) <span class="text-red-400 font-normal normal-case">*</span></label>
+                    <input type="number" id="ca_initialReading" placeholder="e.g. 1000" min="0">
+                    <p class="hint">Enter the current meter reading at account creation time.</p>
+                </div>
+
+                <!-- Client ID Preview -->
+                <div id="caClientIdPreview" class="hidden mb-5 p-4 rounded-xl bg-canvas border border-border">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-2">Client ID Preview</p>
+                    <div class="client-id-pill">
+                        <i class="fa-solid fa-id-card text-xs opacity-60"></i>
+                        <span id="caClientIdValue">WM-</span>
+                    </div>
+                    <p class="text-[10px] text-muted mt-2">Consumer will log in using this exact ID.</p>
+                </div>
+
+                <button onclick="caGoToStep(2)" class="btn-primary-ca w-full">
+                    Continue <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+
+            <!-- STEP 2: Consumer Info -->
+            <div id="caStep2" class="ca-step-panel">
+                <div class="mb-5">
+                    <h3 class="text-sm font-bold text-heading mb-1">Consumer Information</h3>
+                    <p class="text-xs text-muted">Fill in the consumer's personal and contact details.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="ca-field">
+                        <label>First Name <span class="text-red-400 font-normal normal-case">*</span></label>
+                        <input type="text" id="ca_firstName" placeholder="e.g. Rosa">
+                    </div>
+                    <div class="ca-field">
+                        <label>Last Name <span class="text-red-400 font-normal normal-case">*</span></label>
+                        <input type="text" id="ca_lastName" placeholder="e.g. Garcia">
+                    </div>
+                </div>
+
+                <div class="ca-field mb-4">
+                    <label>Complete Address <span class="text-red-400 font-normal normal-case">*</span></label>
+                    <input type="text" id="ca_address" placeholder="e.g. 45 Rizal St, Brgy 1, Polangui">
+                </div>
+
+                <div class="ca-field mb-4">
+                    <label>Contact Number <span class="text-red-400 font-normal normal-case">*</span></label>
+                    <div class="ca-input-prefix">
+                        <span class="ca-prefix-label">+63</span>
+                        <input type="tel" id="ca_contactNum" placeholder="9XX XXX XXXX" maxlength="10">
+                    </div>
+                </div>
+
+                <div class="ca-field mb-5">
+                    <label>Email Address <span class="text-muted font-normal normal-case text-[9px]">(optional)</span></label>
+                    <input type="email" id="ca_emailAddr" placeholder="consumer@email.com">
+                    <p class="hint">Used for digital billing notices if provided.</p>
+                </div>
+
+                <!-- Meter summary -->
+                <div class="p-4 rounded-xl bg-canvas border border-border mb-5 text-xs space-y-2">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-2">Selected Meter</p>
+                    <div class="flex justify-between"><span class="text-muted">Client ID</span><span class="font-mono font-semibold text-brand-400" id="ca_s2meter">—</span></div>
+                    <div class="flex justify-between"><span class="text-muted">Zone</span><span class="text-body" id="ca_s2zone">—</span></div>
+                    <div class="flex justify-between"><span class="text-muted">Type</span><span class="text-body" id="ca_s2type">—</span></div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="caGoToStep(1)" class="btn-ghost-ca flex-shrink-0">
+                        <i class="fa-solid fa-arrow-left text-xs"></i> Back
+                    </button>
+                    <button onclick="caGoToStep(3)" class="btn-primary-ca flex-1">
+                        Continue <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Credentials -->
+            <div id="caStep3" class="ca-step-panel">
+                <div class="mb-5">
+                    <h3 class="text-sm font-bold text-heading mb-1">Account Credentials</h3>
+                    <p class="text-xs text-muted">A one-time password is auto-generated. Consumer must change it on first login.</p>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Client ID (Login Username)</label>
+                    <div class="client-id-pill">
+                        <i class="fa-solid fa-fingerprint text-xs opacity-60"></i>
+                        <span id="ca_s3clientId">WM-</span>
+                    </div>
+                    <p class="text-[11px] text-muted mt-1.5">Read-only — derived from the meter serial number.</p>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">One-Time Password (OTP)</label>
+                    <div class="otp-box">
+                        <p class="text-[10px] font-semibold uppercase tracking-widest text-muted/80 mb-3">Generated Password</p>
+                        <div class="otp-value" id="ca_otpDisplay">— — — —</div>
+                        <div class="mt-3 flex items-center justify-center gap-2">
+                            <button onclick="caRegenerateOTP()" class="text-[11px] font-semibold text-muted hover:text-brand-400 transition-colors flex items-center gap-1.5 bg-surface border border-border rounded-lg px-3 py-1.5">
+                                <i class="fa-solid fa-rotate text-[10px]"></i> Regenerate
+                            </button>
+                            <button onclick="caCopyOTP()" id="ca_copyBtn" class="text-[11px] font-semibold text-muted hover:text-brand-400 transition-colors flex items-center gap-1.5 bg-surface border border-border rounded-lg px-3 py-1.5">
+                                <i class="fa-regular fa-copy text-[10px]"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-muted mt-2"><i class="fa-solid fa-triangle-exclamation text-amber-400 mr-1"></i> Share this password with the consumer. They must change it after first login.</p>
+                </div>
+
+                <!-- Checklist -->
+                <div class="p-4 rounded-xl bg-canvas border border-border mb-5">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-3">Pre-submission Checklist</p>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-2.5">
+                            <div class="w-4 h-4 rounded bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fa-solid fa-check text-emerald-400" style="font-size:8px"></i></div>
+                            <p class="text-xs text-body">Meter serial number verified on-site</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <div class="w-4 h-4 rounded bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fa-solid fa-check text-emerald-400" style="font-size:8px"></i></div>
+                            <p class="text-xs text-body">Consumer's personal details confirmed</p>
+                        </div>
+                        <label class="flex items-start gap-2.5 cursor-pointer">
+                            <input type="checkbox" id="ca_chkOtpGiven" class="mt-0.5 accent-blue-500" style="width:14px;height:14px;flex-shrink:0;">
+                            <p class="text-xs text-body">OTP has been given to the consumer in person or via SMS</p>
+                        </label>
+                        <label class="flex items-start gap-2.5 cursor-pointer">
+                            <input type="checkbox" id="ca_chkFormSigned" class="mt-0.5 accent-blue-500" style="width:14px;height:14px;flex-shrink:0;">
+                            <p class="text-xs text-body">Application form is signed and filed</p>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Account summary -->
+                <div class="p-4 rounded-xl bg-canvas border border-border mb-5 text-xs space-y-2">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-2">Account Summary</p>
+                    <div class="flex justify-between"><span class="text-muted">Consumer</span><span class="font-semibold text-body" id="ca_s3name">—</span></div>
+                    <div class="flex justify-between"><span class="text-muted">Client ID</span><span class="font-mono font-semibold text-brand-400" id="ca_s3id">—</span></div>
+                    <div class="flex justify-between"><span class="text-muted">Zone / Type</span><span class="text-body" id="ca_s3zone">—</span></div>
+                    <div class="flex justify-between"><span class="text-muted">Initial Reading</span><span class="font-mono text-body" id="ca_s3reading">—</span></div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="caGoToStep(2)" class="btn-ghost-ca flex-shrink-0">
+                        <i class="fa-solid fa-arrow-left text-xs"></i> Back
+                    </button>
+                    <button onclick="caCreateAccount()" class="btn-primary-ca flex-1" id="ca_createBtn">
+                        <i class="fa-solid fa-user-plus text-xs"></i> Create Account
+                    </button>
+                </div>
+            </div>
+
+            <!-- SUCCESS -->
+            <div id="caStepSuccess" class="ca-step-panel">
+                <div class="text-center py-4">
+                    <div class="success-ring mb-4">
+                        <i class="fa-solid fa-check text-2xl text-emerald-400"></i>
+                    </div>
+                    <h3 class="text-base font-extrabold text-heading mb-1">Account Created!</h3>
+                    <p class="text-xs text-muted mb-6">The consumer account has been successfully registered.</p>
+
+                    <div class="text-left bg-canvas border border-border rounded-xl p-5 mb-5 text-xs space-y-3">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fa-solid fa-receipt text-brand-400 text-xs"></i>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-muted">Account Registration Receipt</span>
+                        </div>
+                        <div class="flex justify-between border-b border-border pb-2.5"><span class="text-muted">Consumer</span><span class="font-semibold text-body" id="ca_rcName">—</span></div>
+                        <div class="flex justify-between border-b border-border pb-2.5"><span class="text-muted">Client ID</span><span class="font-mono font-semibold text-brand-400" id="ca_rcId">—</span></div>
+                        <div class="flex justify-between border-b border-border pb-2.5"><span class="text-muted">One-Time Password</span><span class="font-mono font-bold text-amber-400" id="ca_rcOtp">—</span></div>
+                        <div class="flex justify-between border-b border-border pb-2.5"><span class="text-muted">Zone</span><span class="text-body" id="ca_rcZone">—</span></div>
+                        <div class="flex justify-between border-b border-border pb-2.5"><span class="text-muted">Meter Type</span><span class="text-body" id="ca_rcType">—</span></div>
+                        <div class="flex justify-between border-b border-border pb-2.5"><span class="text-muted">Initial Reading</span><span class="font-mono text-body" id="ca_rcReading">—</span></div>
+                        <div class="flex justify-between"><span class="text-muted">Created</span><span class="font-mono text-body" id="ca_rcDate">—</span></div>
+                        <div class="mt-3 pt-3 border-t border-border p-3 rounded-lg" style="background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.2);">
+                            <p class="text-[11px] text-amber-400 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Important</p>
+                            <p class="text-[11px] text-muted mt-1">Inform the consumer to log in using their Client ID and OTP above, then immediately change their password in account settings.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="window.print()" class="btn-ghost-ca text-xs py-2.5">
+                            <i class="fa-solid fa-print text-xs"></i> Print Receipt
+                        </button>
+                        <button onclick="closeCreateAccountModal(); caResetModal();" class="btn-primary-ca text-xs py-2.5">
+                            <i class="fa-solid fa-check text-xs"></i> Done
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;"></div>
+
+   <style>
+.toast {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 18px; border-radius:12px; min-width:260px; max-width:380px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4); pointer-events:all;
+    animation:toastIn .25s cubic-bezier(.16,1,.3,1) forwards;
+    border:1px solid;
+}
+.toast.removing { animation:toastOut .2s ease-in forwards; }
+.toast-success { background:#0f2a1e; border-color:rgba(16,185,129,0.3); color:#34d399; }
+.toast-error   { background:#2a0f0f; border-color:rgba(239,68,68,0.3);  color:#f87171; }
+.toast-info    { background:#0f1a2e; border-color:rgba(59,130,246,0.3);  color:#60a5fa; }
+.toast-icon    { font-size:14px; flex-shrink:0; }
+.toast-close   { margin-left:auto; background:none; border:none; cursor:pointer; opacity:0.5; color:inherit; font-size:14px; padding:0 2px; }
+.toast-close:hover { opacity:1; }
+@keyframes toastIn  { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+@keyframes toastOut { from{opacity:1;transform:none} to{opacity:0;transform:translateX(20px)} }
+</style>
+
+<script src="javascript/admin.js"></script>
+
+</body>
+</html>

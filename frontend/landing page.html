@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUBIGTALA — Water Meter Scanning & Billing</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        canvas:   '#08101c',
+                        surface:  '#0f1a2e',
+                        card:     '#131f35',
+                        cardHov:  '#172540',
+                        border:   '#1e2e47',
+                        borderHi: '#2a3f5f',
+                        muted:    '#4a607a',
+                        body:     '#cbd5e1',
+                        heading:  '#f1f5f9',
+                        brand: {
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                        },
+                        cyan: { 400: '#22d3ee', 500: '#06b6d4' },
+                    },
+                    animation: {
+                        'fade-up':   'fadeUp 0.7s ease-out both',
+                        'fade-up-1': 'fadeUp 0.7s ease-out 0.15s both',
+                        'fade-up-2': 'fadeUp 0.7s ease-out 0.3s both',
+                        'fade-up-3': 'fadeUp 0.7s ease-out 0.45s both',
+                        'fade-up-4': 'fadeUp 0.7s ease-out 0.6s both',
+                        'pulse-dot': 'pulseDot 2s ease-in-out infinite',
+                        'float':     'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeUp:   { from: { opacity:'0', transform:'translateY(24px)' }, to: { opacity:'1', transform:'none' } },
+                        pulseDot: { '0%,100%': { boxShadow:'0 0 0 0 rgba(59,130,246,0.6)' }, '50%': { boxShadow:'0 0 0 8px rgba(59,130,246,0)' } },
+                        float:    { '0%,100%': { transform:'translateY(0)' }, '50%': { transform:'translateY(-12px)' } },
+                    },
+                    boxShadow: {
+                        glow:  '0 0 32px rgba(59,130,246,0.2)',
+                        glowC: '0 0 32px rgba(6,182,212,0.18)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { background-color: #08101c; }
+
+        /* Grid background */
+        .grid-bg::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+        }
+
+        /* Radial mesh glow */
+        .mesh-glow {
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 50%, rgba(59,130,246,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 60% at 80% 30%, rgba(6,182,212,0.1) 0%, transparent 60%),
+                #08101c;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:#0f1a2e; }
+        ::-webkit-scrollbar-thumb { background:#1e2e47; border-radius:99px; }
+
+        /* Input focus */
+        input:focus {
+            outline: none;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
+        }
+
+        /* Feature card hover */
+        .feature-card { transition: all 0.2s ease; }
+        .feature-card:hover { transform: translateY(-4px); border-color: #2a3f5f; }
+
+        /* Section reveal animation */
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(24px); }
+            to   { opacity:1; transform:none; }
+        }
+
+        /* Animated orb */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body class="font-sans text-body antialiased">
+
+<!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
+<nav class="sticky top-0 z-50 border-b border-border bg-canvas/85 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 h-14 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse-dot"></span>
+            <span class="text-heading font-extrabold text-base tracking-tight">TUBIGTALA</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm font-medium">
+            <a href="#features" class="text-muted hover:text-body transition-colors hidden sm:block">Features</a>
+            <a href="#tariff" class="text-muted hover:text-body transition-colors hidden sm:block">Tariff</a>
+            <a href="#login-panel" class="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm rounded-lg px-4 py-2 transition-all hover:shadow-glow">
+                <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i> Login
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══════════════════════════ HERO + LOGIN ═══════════════════════════ -->
+<section class="relative min-h-screen mesh-glow grid-bg flex items-center overflow-hidden" id="home">
+
+    <!-- Decorative orbs -->
+    <div class="orb w-96 h-96 bg-brand-500/10 -top-20 -left-20" style="animation-delay:0s;"></div>
+    <div class="orb w-80 h-80 bg-cyan-500/8 top-1/3 right-0" style="animation-delay:3s;"></div>
+
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 py-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+
+            <!-- LEFT: Hero copy -->
+            <div class="text-center lg:text-left">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-7 animate-fade-up">
+                    <i class="fa-solid fa-droplet text-cyan-400"></i>
+                    POWASA · Polangui Waterworks Services Administration
+                </div>
+
+                <h1 class="text-5xl sm:text-6xl font-extrabold text-heading leading-[1.05] tracking-tight mb-6 animate-fade-up-1">
+                    Smart Water<br>
+                    <span class="text-transparent bg-clip-text" style="background-image:linear-gradient(135deg,#3b82f6,#22d3ee);">Meter System</span>
+                </h1>
+
+                <p class="text-base sm:text-lg text-body leading-relaxed max-w-lg mx-auto lg:mx-0 mb-10 animate-fade-up-2">
+                    Mobile-based water meter scanning, automatic billing, and consumption monitoring — built for POWASA's field readers and administrators.
+                </p>
+
+                <!-- Mini stats -->
+                <div class="flex flex-wrap gap-6 justify-center lg:justify-start animate-fade-up-3">
+                    <div class="text-center lg:text-left">
+                        <p class="text-2xl font-extrabold text-brand-400 font-mono">245+</p>
+                        <p class="text-xs text-muted mt-0.5">Active Consumers</p>
+                    </div>
+                    <div class="w-px bg-border self-stretch hidden sm:block"></div>
+                    <div class="text-center lg:text-left">
+                        <p class="text-2xl font-extrabold text-emerald-400 font-mono">99.8%</p>
+                        <p class="text-xs text-muted mt-0.5">System Uptime</p>
+                    </div>
+                    <div class="w-px bg-border self-stretch hidden sm:block"></div>
+                    <div class="text-center lg:text-left">
+                        <p class="text-2xl font-extrabold text-cyan-400 font-mono">OCR</p>
+                        <p class="text-xs text-muted mt-0.5">Powered Scanning</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start animate-fade-up-4">
+                    <a href="#features" class="flex items-center gap-2 bg-surface border border-border hover:border-borderHi text-body font-semibold text-sm rounded-lg px-5 py-2.5 transition-all">
+                        <i class="fa-solid fa-star text-xs text-brand-400"></i> See Features
+                    </a>
+                    <a href="#tariff" class="flex items-center gap-2 text-muted hover:text-body text-sm font-medium transition-colors">
+                        View Tariff Rates <i class="fa-solid fa-arrow-down text-xs ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- RIGHT: Login panel -->
+            <div id="login-panel" class="w-full max-w-md mx-auto lg:mx-0 lg:ml-auto animate-fade-up-2">
+                <div class="bg-card border border-borderHi rounded-2xl shadow-2xl overflow-hidden">
+
+                    <!-- Panel header -->
+                    <div class="px-7 py-5 border-b border-border flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-bold text-heading">Welcome back</h2>
+                            <p class="text-xs text-muted mt-0.5">Sign in to your account</p>
+                        </div>
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-cyan-500 flex items-center justify-center">
+                            <i class="fa-solid fa-droplet text-white text-sm"></i>
+                        </div>
+                    </div>
+
+                    <!-- Demo credentials hint -->
+                    <div class="mx-7 mt-5 bg-amber-400/5 border border-amber-400/20 rounded-xl p-3.5">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-2">Demo Accounts</p>
+                        <div class="space-y-1 font-mono text-xs text-muted">
+                            <div class="flex justify-between"><span class="text-body">Customer</span><span>12345 / demo1234</span></div>
+                            <div class="flex justify-between"><span class="text-body">Reader</span><span>reader01 / reader123</span></div>
+                            <div class="flex justify-between"><span class="text-body">Admin</span><span>admin01 / admin123</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Form -->
+                    <form id="loginForm" class="px-7 py-6 space-y-4">
+
+                        <!-- Role tabs -->
+                        <div class="flex gap-1 bg-surface border border-border rounded-xl p-1">
+                            <button type="button" onclick="setRole('customer',this)" data-role="customer"
+                                class="role-btn flex-1 py-2 text-xs font-semibold rounded-lg transition-all text-muted active-role">
+                                <i class="fa-solid fa-user text-[10px] mr-1"></i> Customer
+                            </button>
+                            <button type="button" onclick="setRole('reader',this)" data-role="reader"
+                                class="role-btn flex-1 py-2 text-xs font-semibold rounded-lg transition-all text-muted">
+                                <i class="fa-solid fa-droplet text-[10px] mr-1"></i> Reader
+                            </button>
+                            <button type="button" onclick="setRole('admin',this)" data-role="admin"
+                                class="role-btn flex-1 py-2 text-xs font-semibold rounded-lg transition-all text-muted">
+                                <i class="fa-solid fa-shield-halved text-[10px] mr-1"></i> Admin
+                            </button>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Client Number</label>
+                            <input type="text" id="clientnumber" placeholder="Enter your client number" required
+                                class="w-full bg-canvas border border-border rounded-xl px-4 py-3 text-sm text-body placeholder-muted transition-all font-mono">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Password</label>
+                            <div class="relative">
+                                <input type="password" id="password" placeholder="Enter your password" required
+                                    class="w-full bg-canvas border border-border rounded-xl px-4 py-3 text-sm text-body placeholder-muted transition-all pr-11">
+                                <button type="button" onclick="togglePwd()" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-body transition-colors text-xs">
+                                    <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Error -->
+                        <div id="errorMessage" class="hidden bg-red-400/8 border border-red-400/20 text-red-400 px-4 py-3 rounded-xl text-xs font-medium"></div>
+
+                        <div class="flex items-center justify-between text-xs text-muted">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="remember" class="w-3.5 h-3.5 rounded border-border bg-canvas text-brand-500 focus:ring-brand-500">
+                                <span>Remember me</span>
+                            </label>
+                            <a href="#" class="hover:text-body transition-colors">Forgot password?</a>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl py-3.5 transition-all hover:shadow-glow">
+                            <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i> Sign In
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════ FEATURES ═══════════════════════════ -->
+<section class="py-24 px-5 sm:px-8 relative" id="features">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <p class="text-xs font-semibold uppercase tracking-widest text-brand-400 mb-3">Platform</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-heading tracking-tight">Key Features</h2>
+            <p class="text-base text-muted mt-3 max-w-xl mx-auto">Everything you need for efficient water meter management in one system.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+            <div class="feature-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-500 to-transparent"></div>
+                <div class="w-11 h-11 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mb-5 group-hover:bg-brand-500/15 transition-colors">
+                    <i class="fa-solid fa-camera text-brand-400 text-base"></i>
+                </div>
+                <h3 class="text-sm font-bold text-heading mb-2">Meter Scanning</h3>
+                <p class="text-sm text-muted leading-relaxed">Scan water meter displays using your smartphone camera with advanced OCR for accurate, instant capture.</p>
+            </div>
+
+            <div class="feature-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-transparent"></div>
+                <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5 group-hover:bg-emerald-500/15 transition-colors">
+                    <i class="fa-solid fa-file-invoice-dollar text-emerald-400 text-base"></i>
+                </div>
+                <h3 class="text-sm font-bold text-heading mb-2">Automatic Billing</h3>
+                <p class="text-sm text-muted leading-relaxed">Instant bill calculation based on volumetric consumption using POWASA's approved tariff schedule.</p>
+            </div>
+
+            <div class="feature-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 to-transparent"></div>
+                <div class="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5 group-hover:bg-cyan-500/15 transition-colors">
+                    <i class="fa-solid fa-chart-line text-cyan-400 text-base"></i>
+                </div>
+                <h3 class="text-sm font-bold text-heading mb-2">Consumption Monitoring</h3>
+                <p class="text-sm text-muted leading-relaxed">Track water usage history, trends, and billing records. Billing history is always front and center.</p>
+            </div>
+
+            <div class="feature-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 to-transparent"></div>
+                <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-5 group-hover:bg-amber-500/15 transition-colors">
+                    <i class="fa-solid fa-bell text-amber-400 text-base"></i>
+                </div>
+                <h3 class="text-sm font-bold text-heading mb-2">Notice & Alerts</h3>
+                <p class="text-sm text-muted leading-relaxed">Automated overdue payment reminders, rate change notices, and maintenance alerts via SMS.</p>
+            </div>
+
+            <div class="feature-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 to-transparent"></div>
+                <div class="w-11 h-11 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-5 group-hover:bg-purple-500/15 transition-colors">
+                    <i class="fa-solid fa-mobile-screen text-purple-400 text-base"></i>
+                </div>
+                <h3 class="text-sm font-bold text-heading mb-2">Mobile-First</h3>
+                <p class="text-sm text-muted leading-relaxed">Designed for field use on smartphones. Readers can scan, submit, and review — entirely from mobile.</p>
+            </div>
+
+            <div class="feature-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-rose-500 to-transparent"></div>
+                <div class="w-11 h-11 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-5 group-hover:bg-rose-500/15 transition-colors">
+                    <i class="fa-solid fa-shield-halved text-rose-400 text-base"></i>
+                </div>
+                <h3 class="text-sm font-bold text-heading mb-2">Admin Control</h3>
+                <p class="text-sm text-muted leading-relaxed">Full administrative control — manage consumers, set rates, generate reports, and send batch notices.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════ TARIFF RATES ═══════════════════════════ -->
+<section class="py-24 px-5 sm:px-8 border-t border-border" id="tariff">
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-12">
+            <p class="text-xs font-semibold uppercase tracking-widest text-brand-400 mb-3">POWASA Schedule</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-heading tracking-tight">Tariff Rates</h2>
+            <p class="text-sm text-muted mt-3 max-w-md mx-auto">Volumetric charges only — billed based on cubic meters (m³) consumed per month.</p>
+        </div>
+
+        <!-- Tariff table -->
+        <div class="bg-card border border-border rounded-2xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+                <h3 class="text-sm font-bold text-heading flex items-center gap-2">
+                    <i class="fa-solid fa-droplet text-cyan-400 text-xs"></i> Monthly Volumetric Charges
+                </h3>
+                <span class="font-mono text-[10px] text-muted bg-surface border border-border px-2 py-0.5 rounded-full">Residential</span>
+            </div>
+
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-border">
+                        <th class="text-left px-6 py-3 text-[10px] font-semibold uppercase tracking-widest text-muted">Consumption Block (m³)</th>
+                        <th class="text-left px-6 py-3 text-[10px] font-semibold uppercase tracking-widest text-muted">Rate per m³</th>
+                        <th class="text-right px-6 py-3 text-[10px] font-semibold uppercase tracking-widest text-muted">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border/50">
+                    <tr class="hover:bg-surface/60 transition-colors">
+                        <td class="px-6 py-4 font-mono text-sm font-semibold text-body">0 – 10 m³</td>
+                        <td class="px-6 py-4 font-mono text-sm font-bold text-emerald-400">₱12.00</td>
+                        <td class="px-6 py-4 text-xs text-muted text-right">Minimum block</td>
+                    </tr>
+                    <tr class="hover:bg-surface/60 transition-colors">
+                        <td class="px-6 py-4 font-mono text-sm font-semibold text-body">11 – 20 m³</td>
+                        <td class="px-6 py-4 font-mono text-sm font-bold text-brand-400">₱16.00</td>
+                        <td class="px-6 py-4 text-xs text-muted text-right">Second block</td>
+                    </tr>
+                    <tr class="hover:bg-surface/60 transition-colors">
+                        <td class="px-6 py-4 font-mono text-sm font-semibold text-body">21 – 30 m³</td>
+                        <td class="px-6 py-4 font-mono text-sm font-bold text-brand-400">₱20.00</td>
+                        <td class="px-6 py-4 text-xs text-muted text-right">Third block</td>
+                    </tr>
+                    <tr class="hover:bg-surface/60 transition-colors">
+                        <td class="px-6 py-4 font-mono text-sm font-semibold text-body">31 – 40 m³</td>
+                        <td class="px-6 py-4 font-mono text-sm font-bold text-amber-400">₱24.00</td>
+                        <td class="px-6 py-4 text-xs text-muted text-right">Fourth block</td>
+                    </tr>
+                    <tr class="hover:bg-surface/60 transition-colors">
+                        <td class="px-6 py-4 font-mono text-sm font-semibold text-body">41 m³ and above</td>
+                        <td class="px-6 py-4 font-mono text-sm font-bold text-red-400">₱28.00</td>
+                        <td class="px-6 py-4 text-xs text-muted text-right">Excess block</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="px-6 py-4 border-t border-border bg-surface/50">
+                <p class="text-[11px] text-muted"><i class="fa-solid fa-circle-info text-brand-400 mr-1.5"></i>Only volumetric charges apply. No additional fees or VAT are added to the billed amount per POWASA policy.</p>
+            </div>
+        </div>
+
+        <!-- Bill estimator -->
+        
+    </div>
+</section>
+
+<!-- ═══════════════════════════ CTA ═══════════════════════════ -->
+<section class="py-20 px-5 sm:px-8 border-t border-border">
+    <div class="max-w-2xl mx-auto text-center">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-cyan-500 flex items-center justify-center mx-auto mb-6 shadow-glow">
+            <i class="fa-solid fa-droplet text-white text-xl"></i>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-heading tracking-tight mb-4">
+            Ready to get started?
+        </h2>
+        <p class="text-base text-muted mb-8 max-w-md mx-auto">Efficient, transparent, and convenient water billing for POWASA consumers and administrators.</p>
+        <div class="flex flex-wrap gap-3 justify-center">
+            <a href="#login-panel" class="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl px-6 py-3 transition-all hover:shadow-glow">
+                <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i> Sign In Now
+            </a>
+            <a href="#features" class="flex items-center gap-2 bg-surface hover:bg-cardHov border border-border text-body font-semibold text-sm rounded-xl px-6 py-3 transition-all">
+                Explore Features
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<footer class="border-t border-border py-8 px-5 sm:px-8">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2.5">
+           
+        </div>
+        <p class="font-mono text-xs text-muted text-center">© 2026 TUBIGTALA · Polangui Waterworks Services Administration (POWASA)</p>
+        <div class="flex items-center gap-1.5 text-xs text-muted">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> System Online
+        </div>
+    </div>
+</footer>
+
+<!-- ═══════════════════════════ JS ═══════════════════════════ -->
+<script src="javascript/landing.js"></script>
+</body>
+</html>

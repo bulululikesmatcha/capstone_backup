@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>TUBIGTALA — My Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: { 300:'#93c5fd', 400:'#60a5fa', 500:'#3b82f6', 600:'#2563eb' },
+                        cyan:  { 400:'#22d3ee', 500:'#06b6d4' },
+                    },
+                    boxShadow: {
+                        glow:  '0 0 24px rgba(59,130,246,0.22)',
+                        glowG: '0 0 18px rgba(16,185,129,0.18)',
+                        glowC: '0 0 24px rgba(6,182,212,0.2)',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        html.dark {
+            --bg:        #08101c;
+            --surface:   #0f1a2e;
+            --card:      #131f35;
+            --card-hov:  #172540;
+            --border:    #1e2e47;
+            --border-hi: #2a3f5f;
+            --muted:     #4a607a;
+            --body:      #cbd5e1;
+            --heading:   #f1f5f9;
+            --divider:   rgba(30,46,71,0.6);
+            --input-bg:  #08101c;
+            --row-hover: rgba(15,26,46,0.65);
+            --nav-blur:  rgba(8,16,28,0.88);
+            --tip-bg:    rgba(6,182,212,0.05);
+            --tip-bdr:   rgba(6,182,212,0.2);
+            --note-bg:   rgba(59,130,246,0.06);
+            --note-bdr:  rgba(59,130,246,0.22);
+            --res-bg:    rgba(16,185,129,0.05);
+            --res-bdr:   rgba(16,185,129,0.22);
+            --tog-track: #1e2e47;
+            --tog-thumb: #60a5fa;
+            --tog-pos:   3px;
+        }
+        html.light {
+            --bg:        #f0f4fb;
+            --surface:   #e6edf8;
+            --card:      #ffffff;
+            --card-hov:  #f4f7ff;
+            --border:    #cdd8ee;
+            --border-hi: #a8bcd8;
+            --muted:     #7a90a8;
+            --body:      #374151;
+            --heading:   #0f172a;
+            --divider:   rgba(180,200,230,0.55);
+            --input-bg:  #f8faff;
+            --row-hover: rgba(220,230,248,0.6);
+            --nav-blur:  rgba(240,244,251,0.9);
+            --tip-bg:    rgba(6,182,212,0.05);
+            --tip-bdr:   rgba(6,182,212,0.22);
+            --note-bg:   rgba(59,130,246,0.05);
+            --note-bdr:  rgba(59,130,246,0.18);
+            --res-bg:    rgba(16,185,129,0.05);
+            --res-bdr:   rgba(16,185,129,0.22);
+            --tog-track: #a8bcd8;
+            --tog-thumb: #f59e0b;
+            --tog-pos:   23px;
+        }
+
+        body        { background: var(--bg); color: var(--body); transition: background .3s, color .3s; }
+        .v-card     { background: var(--card); border-color: var(--border); transition: background .3s, border-color .3s; }
+        .v-surface  { background: var(--surface); }
+        .v-border   { border-color: var(--border); }
+        .v-text     { color: var(--heading); }
+        .v-body     { color: var(--body); }
+        .v-muted    { color: var(--muted); }
+        .v-input    { background: var(--input-bg); border-color: var(--border); color: var(--body); }
+        .v-nav      { background: var(--nav-blur); border-color: var(--border); }
+        .v-hover:hover         { background: var(--card-hov); }
+        .v-surface-hover:hover { background: var(--surface); }
+        .v-row-hover:hover     { background: var(--row-hover); }
+        .v-divider  { border-color: var(--divider); }
+        .v-tip      { background: var(--tip-bg); border-color: var(--tip-bdr); }
+        .v-note     { background: var(--note-bg); border-color: var(--note-bdr); }
+        .v-result   { background: var(--res-bg);  border-color: var(--res-bdr); }
+        .v-dropdown { background: var(--card);    border-color: var(--border); }
+
+        html.dark body::before {
+            content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.025) 1px, transparent 1px);
+            background-size: 44px 44px;
+        }
+        html.light body::before { display: none; }
+        html.light .v-card { box-shadow: 0 2px 14px rgba(30,60,120,0.07); }
+
+        .stat-accent::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:12px 12px 0 0; }
+        .accent-red::before   { background: linear-gradient(90deg,#ef4444,transparent); }
+        .accent-cyan::before  { background: linear-gradient(90deg,#06b6d4,transparent); }
+        .accent-blue::before  { background: linear-gradient(90deg,#3b82f6,transparent); }
+        .accent-green::before { background: linear-gradient(90deg,#10b981,transparent); }
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: slideUp .22s ease-out; }
+        .tab-btn  { transition: all .15s; color: var(--muted); }
+        .tab-btn.active {
+            background: var(--card-hov); color: var(--heading);
+            border-color: var(--border-hi) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,.18);
+        }
+
+        .prog-track { border-radius:999px; height:3px; width:100%; overflow:hidden; background:rgba(128,150,180,0.12); }
+        html.light .prog-track { background: rgba(0,0,0,0.07); }
+        .prog-fill  { height:100%; border-radius:999px; }
+
+        .tog-pill  { width:44px; height:24px; border-radius:999px; background:var(--tog-track); position:relative; cursor:pointer; border:none; transition:background .3s; flex-shrink:0; }
+        .tog-thumb { position:absolute; top:3px; width:18px; height:18px; border-radius:50%; background:var(--tog-thumb); left:var(--tog-pos); transition:left .3s cubic-bezier(.4,0,.2,1),background .3s; }
+
+        input:focus, select:focus { outline:none; border-color:#3b82f6!important; box-shadow:0 0 0 3px rgba(59,130,246,.15)!important; }
+
+        ::-webkit-scrollbar { width:5px; height:5px; }
+        ::-webkit-scrollbar-track { background: var(--surface); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius:99px; }
+
+        @media (max-width:640px) { .hide-sm { display:none!important; } }
+        @media (max-width:768px) { .hide-md { display:none!important; } }
+
+        @keyframes slideUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+        @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+
+        /* Change Password Modal */
+        .pwd-modal-overlay {
+            display:none; position:fixed; inset:0; z-index:50;
+            background:rgba(0,0,0,0.75); backdrop-filter:blur(8px);
+            align-items:center; justify-content:center; padding:16px;
+            animation:fadeIn .2s ease-out;
+        }
+        .pwd-modal-overlay.open { display:flex; }
+        .pwd-modal {
+            background:var(--card); border:1px solid var(--border-hi);
+            border-radius:20px; width:100%; max-width:420px;
+            box-shadow:0 32px 80px rgba(0,0,0,0.5);
+            animation:slideUp .25s cubic-bezier(.16,1,.3,1);
+            overflow:hidden;
+        }
+        .pwd-field label {
+            display:block; font-size:10px; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.1em;
+            color:var(--muted); margin-bottom:6px;
+        }
+        .pwd-field input {
+            width:100%; background:var(--input-bg); border:1.5px solid var(--border);
+            border-radius:10px; padding:11px 44px 11px 14px;
+            font-size:13px; color:var(--body); font-family:'Plus Jakarta Sans',sans-serif;
+            transition:border-color .15s, box-shadow .15s;
+        }
+        .pwd-field { position: relative; }
+        .pwd-toggle {
+            position:absolute; right:12px; top:50%; transform:translateY(-50%);
+            background:none; border:none; cursor:pointer; color:var(--muted);
+            padding:4px; font-size:12px; transition:color .15s;
+        }
+        .pwd-toggle:hover { color:var(--body); }
+        .pwd-strength-bar {
+            height:3px; border-radius:999px; margin-top:6px;
+            background:var(--border); overflow:hidden;
+        }
+        .pwd-strength-fill { height:100%; border-radius:999px; transition:width .3s, background .3s; }
+    </style>
+</head>
+
+<body class="font-sans min-h-screen">
+<div class="relative z-10">
+
+<!-- ══════════════════ NAVBAR ══════════════════ -->
+<nav class="sticky top-0 z-50 v-nav border-b backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+
+        <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-droplet text-cyan-400 text-sm"></i>
+            <span class="v-text font-extrabold text-base tracking-tight">TUBIGTALA</span>
+            <span class="hidden sm:inline-flex items-center text-[10px] font-mono font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded-full">Customer</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span id="navClock" class="hidden sm:block font-mono text-xs v-muted v-surface border v-border rounded-lg px-3 py-1.5 select-none">00:00:00</span>
+
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-moon text-[10px] v-muted hide-sm"></i>
+                <button class="tog-pill" onclick="toggleTheme()" title="Toggle theme">
+                    <div class="tog-thumb"></div>
+                </button>
+                <i class="fa-solid fa-sun text-[10px] v-muted hide-sm"></i>
+            </div>
+
+            <div class="relative">
+                <button onclick="toggleDrop(event)" class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-brand-500 flex items-center justify-center text-white text-xs font-bold relative select-none">
+                    <span id="avatarLetter">J</span>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2" style="border-color:var(--bg)"></span>
+                </button>
+                <div id="dropMenu" class="hidden absolute right-0 mt-2 w-52 v-dropdown border rounded-xl shadow-2xl overflow-hidden z-50" style="animation:fadeIn .15s ease-out">
+                    <div class="px-4 py-3 border-b v-border">
+                        <p class="text-xs font-bold v-text" id="ddName">John Doe</p>
+                        <p class="text-[11px] v-muted mt-0.5">Residential Customer</p>
+                        <p class="text-[10px] font-mono v-muted mt-0.5">WM-8842-A</p>
+                    </div>
+                    <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-sm v-body v-surface-hover transition-colors"><i class="fa-solid fa-user-circle w-4 v-muted text-xs"></i> My Profile</a>
+                    <a href="#" onclick="openChangePassword(); return false;" class="flex items-center gap-2.5 px-4 py-2.5 text-sm v-body v-surface-hover transition-colors"><i class="fa-solid fa-lock w-4 v-muted text-xs"></i> Change Password</a>
+                    <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-sm v-body v-surface-hover transition-colors"><i class="fa-solid fa-home w-4 v-muted text-xs"></i> My Properties</a>
+                    <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-2.5 text-sm v-body v-surface-hover transition-colors border-t v-border">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-circle-half-stroke w-4 v-muted text-xs"></i> Theme</span>
+                        <span id="themeLabel" class="text-[10px] font-mono v-muted">Dark</span>
+                    </button>
+                    <button onclick="logout()" class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors border-t v-border">
+                        <i class="fa-solid fa-right-from-bracket w-4 text-xs"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════ PAGE ══════════════════ -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 py-7">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-7">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold v-text tracking-tight">My Dashboard</h1>
+            <p class="text-sm v-muted mt-1">Welcome back — here's your water usage and billing summary.</p>
+        </div>
+        <div class="text-right">
+            <p class="text-xs font-semibold v-text" id="headerName">John Doe</p>
+            <p class="text-[11px] font-mono v-muted mt-0.5">WM-8842-A · Zone A</p>
+        </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="relative stat-accent accent-red v-card border v-border rounded-xl p-5 overflow-hidden transition-all duration-200 hover:-translate-y-0.5">
+            <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-3">Outstanding Bill</p>
+            <p class="text-2xl font-extrabold text-red-400 tracking-tight leading-none font-mono">₱1,250</p>
+            <p class="text-[11px] v-muted mt-2">Due Feb 22, 2026</p>
+            <i class="fa-solid fa-file-invoice-dollar absolute top-4 right-4 text-2xl text-red-500/10"></i>
+        </div>
+        <div class="relative stat-accent accent-cyan v-card border v-border rounded-xl p-5 overflow-hidden transition-all duration-200 hover:-translate-y-0.5">
+            <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-3">This Month</p>
+            <p class="text-2xl font-extrabold text-cyan-400 tracking-tight leading-none font-mono">28 m³</p>
+            <p class="text-[11px] v-muted mt-2">Feb consumption</p>
+            <i class="fa-solid fa-droplet absolute top-4 right-4 text-2xl text-cyan-500/10"></i>
+        </div>
+        <div class="relative stat-accent accent-blue v-card border v-border rounded-xl p-5 overflow-hidden transition-all duration-200 hover:-translate-y-0.5">
+            <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-3">Last Reading</p>
+            <p class="text-2xl font-extrabold text-brand-400 tracking-tight leading-none font-mono">1,245</p>
+            <p class="text-[11px] v-muted mt-2">m³ · Feb 13, 2026</p>
+            <i class="fa-solid fa-gauge absolute top-4 right-4 text-2xl text-brand-500/10"></i>
+        </div>
+        <div class="relative stat-accent accent-green v-card border v-border rounded-xl p-5 overflow-hidden transition-all duration-200 hover:-translate-y-0.5">
+            <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-3">Account Status</p>
+            <div class="flex items-center gap-1.5 mt-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-lg font-bold text-emerald-400">Active</span>
+            </div>
+            <p class="text-[11px] v-muted mt-1.5">All good!</p>
+            <i class="fa-solid fa-circle-check absolute top-4 right-4 text-2xl text-emerald-500/10"></i>
+        </div>
+    </div>
+
+    <!-- TAB BAR -->
+    <div class="flex items-center gap-1 v-surface border v-border rounded-xl p-1 mb-6 w-fit max-w-full overflow-x-auto">
+        <button data-tab="billing" onclick="switchTab('billing',this)"
+            class="tab-btn active flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-transparent whitespace-nowrap">
+            <i class="fa-solid fa-receipt text-[11px]"></i> Billing History
+        </button>
+        <button data-tab="usage" onclick="switchTab('usage',this)"
+            class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-transparent whitespace-nowrap">
+            <i class="fa-solid fa-chart-line text-[11px]"></i> Water Usage
+        </button>
+        <button data-tab="tariff" onclick="switchTab('tariff',this)"
+            class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-transparent whitespace-nowrap">
+            <i class="fa-solid fa-tags text-[11px]"></i> Tariff Rates
+        </button>
+    </div>
+
+    <!-- ════════ TAB 1: BILLING HISTORY ════════ -->
+    <div id="billing" class="tab-pane active">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+            <div class="space-y-5">
+                <!-- Current statement -->
+                <div class="v-card border v-border rounded-xl p-5">
+                    <h2 class="text-sm font-bold v-text flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-file-invoice text-cyan-400 text-xs"></i> Current Statement
+                    </h2>
+                    <div class="text-center py-6 rounded-xl mb-4" style="background:radial-gradient(ellipse at center,rgba(6,182,212,.07) 0%,transparent 70%)">
+                        <p class="text-[10px] font-semibold uppercase tracking-widest text-cyan-400/70 mb-2">Amount Due</p>
+                        <p class="font-mono text-4xl font-extrabold text-cyan-400 tracking-tighter">₱1,250</p>
+                        <p class="text-xs v-muted mt-2">Due by February 22, 2026</p>
+                        <span class="inline-flex items-center gap-1 mt-3 text-[11px] font-semibold text-red-400 bg-red-400/10 border border-red-400/20 px-2.5 py-0.5 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Unpaid
+                        </span>
+                    </div>
+                    <div class="text-xs space-y-0">
+                        <div class="flex justify-between items-center py-2.5 border-b v-divider"><span class="v-muted">Billing Period</span><span class="font-mono v-body">Jan 15 – Feb 15, 2026</span></div>
+                        <div class="flex justify-between items-center py-2.5 border-b v-divider"><span class="v-muted">Previous Reading</span><span class="font-mono v-body">1,217 m³</span></div>
+                        <div class="flex justify-between items-center py-2.5 border-b v-divider"><span class="v-muted">Current Reading</span><span class="font-mono v-body">1,245 m³</span></div>
+                        <div class="flex justify-between items-center py-2.5 border-b v-divider"><span class="v-muted">Consumption</span><span class="font-mono v-body">28 m³</span></div>
+                        <div class="flex justify-between items-center py-2.5"><span class="font-semibold v-text">Total</span><span class="font-mono text-sm font-extrabold text-cyan-400">₱1,250</span></div>
+                    </div>
+                    <button class="w-full mt-4 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl py-3 transition-all hover:shadow-glow">
+                        <i class="fa-solid fa-credit-card text-xs"></i> Pay Now
+                    </button>
+                </div>
+
+                <!-- Account info -->
+                <div class="v-card border v-border rounded-xl p-5">
+                    <h2 class="text-sm font-bold v-text flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-user text-brand-400 text-xs"></i> Account Info
+                    </h2>
+                    <div class="space-y-3 text-xs">
+                        <div class="flex justify-between"><span class="v-muted">Client ID</span><span class="font-mono v-body">WM-8842-A</span></div>
+                        <div class="flex justify-between"><span class="v-muted">Consumer</span><span class="font-semibold v-text">John Doe</span></div>
+                        <div class="flex justify-between"><span class="v-muted">Address</span><span class="v-body text-right max-w-[55%]">123 Mabini St, Brgy 1</span></div>
+                        <div class="flex justify-between"><span class="v-muted">Zone</span><span class="font-mono v-body">Zone A</span></div>
+                        <div class="flex justify-between"><span class="v-muted">Meter Serial</span><span class="font-mono v-body">WM-8842-A</span></div>
+                        <div class="flex justify-between"><span class="v-muted">Connection</span><span class="v-body">Residential</span></div>
+                    </div>
+                    <button onclick="openChangePassword()" class="w-full mt-4 flex items-center justify-center gap-2 text-brand-400 bg-brand-500/10 hover:bg-brand-500/18 border border-brand-500/20 font-semibold text-xs rounded-lg py-2 transition-all">
+                        <i class="fa-solid fa-lock text-[10px]"></i> Change Password
+                    </button>
+                </div>
+
+                <div class="v-note border rounded-xl p-4">
+                    <p class="text-xs font-semibold text-brand-400 mb-1.5"><i class="fa-solid fa-circle-info mr-1.5"></i> Reminder</p>
+                    <p class="text-xs v-body leading-relaxed">Please pay your bills on time to avoid service disconnection. Contact POWASA for payment extensions.</p>
+                </div>
+            </div>
+
+            <!-- Payment history table -->
+            <div class="lg:col-span-2 v-card border v-border rounded-xl p-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                    <h2 class="text-sm font-bold v-text flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-brand-400 text-xs"></i> Payment History
+                    </h2>
+                    <button class="flex items-center gap-1.5 text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all self-start">
+                        <i class="fa-solid fa-download text-[10px]"></i> Download Bill
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b v-border">
+                                <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Period</th>
+                                <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-sm">Usage</th>
+                                <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Amount</th>
+                                <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-md">Due Date</th>
+                                <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Status</th>
+                                <th class="pb-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y v-divider">
+                            <tr class="v-row-hover transition-colors">
+                                <td class="py-3.5 pr-4"><p class="text-sm font-medium v-text">Feb 2026</p><p class="font-mono text-[10px] v-muted mt-0.5">Jan 15 – Feb 15</p></td>
+                                <td class="py-3.5 pr-4 font-mono text-sm v-body hide-sm">28 m³</td>
+                                <td class="py-3.5 pr-4 font-mono text-sm font-bold text-red-400">₱1,250</td>
+                                <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">Feb 22, 2026</td>
+                                <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-400 bg-red-400/10 border border-red-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Unpaid</span></td>
+                                <td class="py-3.5"><button class="text-xs font-bold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap">Pay Now</button></td>
+                            </tr>
+                            <tr class="v-row-hover transition-colors">
+                                <td class="py-3.5 pr-4"><p class="text-sm font-medium v-text">Jan 2026</p><p class="font-mono text-[10px] v-muted mt-0.5">Dec 15 – Jan 15</p></td>
+                                <td class="py-3.5 pr-4 font-mono text-sm v-body hide-sm">25 m³</td>
+                                <td class="py-3.5 pr-4 font-mono text-sm font-bold text-emerald-400">₱1,100</td>
+                                <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">Jan 22, 2026</td>
+                                <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Paid</span></td>
+                                <td class="py-3.5"><button class="text-xs font-semibold v-muted v-surface border v-border px-3 py-1.5 rounded-lg transition-all v-hover">View</button></td>
+                            </tr>
+                            <tr class="v-row-hover transition-colors">
+                                <td class="py-3.5 pr-4"><p class="text-sm font-medium v-text">Dec 2025</p><p class="font-mono text-[10px] v-muted mt-0.5">Nov 15 – Dec 15</p></td>
+                                <td class="py-3.5 pr-4 font-mono text-sm v-body hide-sm">22 m³</td>
+                                <td class="py-3.5 pr-4 font-mono text-sm font-bold text-emerald-400">₱950</td>
+                                <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">Dec 22, 2025</td>
+                                <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Paid</span></td>
+                                <td class="py-3.5"><button class="text-xs font-semibold v-muted v-surface border v-border px-3 py-1.5 rounded-lg transition-all v-hover">View</button></td>
+                            </tr>
+                            <tr class="v-row-hover transition-colors">
+                                <td class="py-3.5 pr-4"><p class="text-sm font-medium v-text">Nov 2025</p><p class="font-mono text-[10px] v-muted mt-0.5">Oct 15 – Nov 15</p></td>
+                                <td class="py-3.5 pr-4 font-mono text-sm v-body hide-sm">30 m³</td>
+                                <td class="py-3.5 pr-4 font-mono text-sm font-bold text-emerald-400">₱1,350</td>
+                                <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">Nov 22, 2025</td>
+                                <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Paid</span></td>
+                                <td class="py-3.5"><button class="text-xs font-semibold v-muted v-surface border v-border px-3 py-1.5 rounded-lg transition-all v-hover">View</button></td>
+                            </tr>
+                            <tr class="v-row-hover transition-colors">
+                                <td class="py-3.5 pr-4"><p class="text-sm font-medium v-text">Oct 2025</p><p class="font-mono text-[10px] v-muted mt-0.5">Sep 15 – Oct 15</p></td>
+                                <td class="py-3.5 pr-4 font-mono text-sm v-body hide-sm">18 m³</td>
+                                <td class="py-3.5 pr-4 font-mono text-sm font-bold text-emerald-400">₱770</td>
+                                <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">Oct 22, 2025</td>
+                                <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Paid</span></td>
+                                <td class="py-3.5"><button class="text-xs font-semibold v-muted v-surface border v-border px-3 py-1.5 rounded-lg transition-all v-hover">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ TAB 2: WATER USAGE ════════ -->
+    <div id="usage" class="tab-pane">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <div class="lg:col-span-2 space-y-5">
+                <div class="v-card border v-border rounded-xl p-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                        <h2 class="text-sm font-bold v-text flex items-center gap-2">
+                            <i class="fa-solid fa-chart-bar text-brand-400 text-xs"></i> Monthly Consumption
+                        </h2>
+                        <select class="v-input border rounded-lg px-3 py-1.5 text-xs transition-all self-start">
+                            <option>Last 30 Days</option><option>Last 60 Days</option><option>Last 90 Days</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-3 h-36 px-2 mb-3">
+                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                            <span class="font-mono text-[10px] v-muted">18</span>
+                            <div class="w-full rounded-t" style="height:60%;background:rgba(59,130,246,0.22)"></div>
+                            <span class="text-[9px] font-mono v-muted">Oct</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                            <span class="font-mono text-[10px] v-muted">30</span>
+                            <div class="w-full rounded-t" style="height:100%;background:rgba(59,130,246,0.26)"></div>
+                            <span class="text-[9px] font-mono v-muted">Nov</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                            <span class="font-mono text-[10px] v-muted">22</span>
+                            <div class="w-full rounded-t" style="height:73%;background:rgba(59,130,246,0.26)"></div>
+                            <span class="text-[9px] font-mono v-muted">Dec</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                            <span class="font-mono text-[10px] v-muted">25</span>
+                            <div class="w-full rounded-t" style="height:83%;background:rgba(59,130,246,0.3)"></div>
+                            <span class="text-[9px] font-mono v-muted">Jan</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1.5">
+                            <span class="font-mono text-[10px] text-cyan-400 font-semibold">28</span>
+                            <div class="w-full rounded-t bg-cyan-500" style="height:93%;box-shadow:0 0 12px rgba(6,182,212,.3)"></div>
+                            <span class="text-[9px] font-mono text-cyan-400 font-semibold">Feb</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t v-border grid grid-cols-3 gap-4 text-center">
+                        <div><p class="font-mono text-base font-bold v-body">24.6 m³</p><p class="text-[11px] v-muted mt-0.5">5-month avg</p></div>
+                        <div><p class="font-mono text-base font-bold text-cyan-400">28 m³</p><p class="text-[11px] v-muted mt-0.5">This month</p></div>
+                        <div><p class="font-mono text-base font-bold text-amber-400">+12%</p><p class="text-[11px] v-muted mt-0.5">vs Jan</p></div>
+                    </div>
+                </div>
+
+                <div class="v-card border v-border rounded-xl p-5">
+                    <h2 class="text-sm font-bold v-text flex items-center gap-2 mb-5">
+                        <i class="fa-solid fa-gauge text-brand-400 text-xs"></i> Recent Meter Readings
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b v-border">
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Date</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Reading (m³)</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-sm">Usage</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y v-divider">
+                                <tr class="v-row-hover transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs v-muted">Feb 13, 2026</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm font-semibold v-body">1,245</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm text-cyan-400 hide-sm">+8 m³</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Monitoring</span></td>
+                                </tr>
+                                <tr class="v-row-hover transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs v-muted">Feb 12, 2026</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm font-semibold v-body">1,237</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm text-cyan-400 hide-sm">+7 m³</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Recorded</span></td>
+                                </tr>
+                                <tr class="v-row-hover transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs v-muted">Feb 11, 2026</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm font-semibold v-body">1,230</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm text-cyan-400 hide-sm">+6 m³</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Recorded</span></td>
+                                </tr>
+                                <tr class="v-row-hover transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs v-muted">Feb 10, 2026</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm font-semibold v-body">1,224</td>
+                                    <td class="py-3.5 pr-4 font-mono text-sm text-cyan-400 hide-sm">+7 m³</td>
+                                    <td class="py-3.5"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Recorded</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-5">
+                <div class="v-card border v-border rounded-xl p-5">
+                    <h2 class="text-sm font-bold v-text flex items-center gap-2 mb-5">
+                        <i class="fa-solid fa-gauge-high text-cyan-400 text-xs"></i> Usage Stats
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5"><span class="text-xs v-muted uppercase tracking-wide">This Month</span><span class="font-mono text-sm font-semibold text-cyan-400">28 m³</span></div>
+                            <div class="prog-track"><div class="prog-fill bg-cyan-400" style="width:93%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5"><span class="text-xs v-muted uppercase tracking-wide">Last Month</span><span class="font-mono text-sm font-semibold text-brand-400">25 m³</span></div>
+                            <div class="prog-track"><div class="prog-fill bg-brand-400" style="width:83%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5"><span class="text-xs v-muted uppercase tracking-wide">Highest (Nov)</span><span class="font-mono text-sm font-semibold text-red-400">30 m³</span></div>
+                            <div class="prog-track"><div class="prog-fill bg-red-400" style="width:100%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5"><span class="text-xs v-muted uppercase tracking-wide">Lowest (Oct)</span><span class="font-mono text-sm font-semibold text-emerald-400">18 m³</span></div>
+                            <div class="prog-track"><div class="prog-fill bg-emerald-400" style="width:60%"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="v-tip border rounded-xl p-4">
+                    <p class="text-xs font-semibold text-cyan-400 mb-2"><i class="fa-solid fa-lightbulb mr-1.5"></i> Conservation Tip</p>
+                    <p class="text-xs v-body leading-relaxed">Your Feb usage is <span class="text-amber-400 font-semibold">12% higher</span> than January. Check for leaking faucets or pipes to keep your bill manageable.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ TAB 3: TARIFF RATES ════════ -->
+    <div id="tariff" class="tab-pane">
+        <div class="max-w-3xl space-y-5">
+
+            <div class="v-card border v-border rounded-xl overflow-hidden">
+                <div class="px-6 py-4 border-b v-border flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-sm font-bold v-text flex items-center gap-2">
+                        <i class="fa-solid fa-droplet text-cyan-400 text-xs"></i> POWASA Volumetric Tariff Schedule
+                    </h2>
+                    <span class="font-mono text-[10px] v-muted v-surface border v-border px-2 py-0.5 rounded-full">Effective 2026</span>
+                </div>
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b v-border">
+                            <th class="text-left px-6 py-3 text-[10px] font-semibold uppercase tracking-widest v-muted">Consumption Block</th>
+                            <th class="text-left px-6 py-3 text-[10px] font-semibold uppercase tracking-widest v-muted">Rate / m³</th>
+                            <th class="text-right px-6 py-3 text-[10px] font-semibold uppercase tracking-widest v-muted hide-sm">Block Ceiling</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y v-divider">
+                        <tr class="v-row-hover transition-colors">
+                            <td class="px-6 py-4 font-mono text-sm font-semibold v-body">0 – 10 m³</td>
+                            <td class="px-6 py-4 font-mono text-sm font-bold text-emerald-400">₱12.00</td>
+                            <td class="px-6 py-4 font-mono text-xs v-muted text-right hide-sm">max ₱120.00</td>
+                        </tr>
+                        <tr class="v-row-hover transition-colors">
+                            <td class="px-6 py-4 font-mono text-sm font-semibold v-body">11 – 20 m³</td>
+                            <td class="px-6 py-4 font-mono text-sm font-bold text-brand-400">₱16.00</td>
+                            <td class="px-6 py-4 font-mono text-xs v-muted text-right hide-sm">max ₱160.00</td>
+                        </tr>
+                        <tr class="v-row-hover transition-colors">
+                            <td class="px-6 py-4 font-mono text-sm font-semibold v-body">21 – 30 m³</td>
+                            <td class="px-6 py-4 font-mono text-sm font-bold text-brand-400">₱20.00</td>
+                            <td class="px-6 py-4 font-mono text-xs v-muted text-right hide-sm">max ₱200.00</td>
+                        </tr>
+                        <tr class="v-row-hover transition-colors">
+                            <td class="px-6 py-4 font-mono text-sm font-semibold v-body">31 – 40 m³</td>
+                            <td class="px-6 py-4 font-mono text-sm font-bold text-amber-400">₱24.00</td>
+                            <td class="px-6 py-4 font-mono text-xs v-muted text-right hide-sm">max ₱240.00</td>
+                        </tr>
+                        <tr class="v-row-hover transition-colors">
+                            <td class="px-6 py-4 font-mono text-sm font-semibold v-body">41 m³ and above</td>
+                            <td class="px-6 py-4 font-mono text-sm font-bold text-red-400">₱28.00</td>
+                            <td class="px-6 py-4 font-mono text-xs v-muted text-right hide-sm">per m³ above 40</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="px-6 py-4 border-t v-border v-surface">
+                    <p class="text-[11px] v-muted">
+                        <i class="fa-solid fa-circle-info text-brand-400 mr-1.5"></i>
+                        Only volumetric charges apply. <strong class="v-body">No VAT, no meter reading fee, no system development charge, and no environmental charge</strong> per POWASA policy.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Bill calculator -->
+            <div class="v-card border v-border rounded-xl p-6">
+                <h3 class="text-sm font-bold v-text flex items-center gap-2 mb-5">
+                    <i class="fa-solid fa-calculator text-brand-400 text-xs"></i> Bill Calculator
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase tracking-widest v-muted mb-1.5">Previous Reading (m³)</label>
+                        <input type="number" id="prevReading" placeholder="e.g. 1217" oninput="calcBill()"
+                            class="v-input w-full border rounded-xl px-4 py-3 text-sm font-mono transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase tracking-widest v-muted mb-1.5">Current Reading (m³)</label>
+                        <input type="number" id="currReading" placeholder="e.g. 1245" oninput="calcBill()"
+                            class="v-input w-full border rounded-xl px-4 py-3 text-sm font-mono transition-all">
+                    </div>
+                </div>
+                <div id="calcResult" class="hidden v-result border rounded-xl p-5 mb-3">
+                    <p class="text-[10px] font-semibold uppercase tracking-widest text-emerald-400/70 mb-3 text-center">Estimated Bill — Volumetric Only</p>
+                    <p class="font-mono text-4xl font-extrabold text-emerald-400 tracking-tighter text-center" id="calcAmount">₱0.00</p>
+                    <p class="text-xs v-muted mt-2 text-center">Consumption: <span class="v-body font-semibold font-mono" id="calcM3">0 m³</span></p>
+                    <div id="calcBreakdown" class="mt-4 space-y-1 text-xs border-t v-border pt-3"></div>
+                </div>
+                <p class="text-[11px] v-muted">Enter your previous and current readings to estimate your bill.</p>
+            </div>
+
+            <div class="v-note border rounded-xl p-4">
+                <p class="text-xs font-semibold text-brand-400 mb-2"><i class="fa-solid fa-circle-info mr-1.5"></i> Tariff Policy</p>
+                <p class="text-xs v-body leading-relaxed">
+                    POWASA applies <strong class="v-text">volumetric charges only</strong>. Unlike other water utilities, no additional charges (meter reading fee ₱50, system development charge ₱30, environmental charge ₱25) and no 12% VAT are added to your water bill.
+                </p>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer class="border-t v-border mt-12 py-6 text-center">
+    <p class="font-mono text-xs v-muted">© 2026 TUBIGTALA · Polangui Waterworks Services Administration (POWASA)</p>
+</footer>
+
+
+<!-- ═══════════════════ CHANGE PASSWORD MODAL ═══════════════════ -->
+<div id="pwdModal" class="pwd-modal-overlay" onclick="closePwdIfOutside(event)">
+    <div class="pwd-modal">
+        <div class="px-6 py-4 border-b v-border flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-brand-500/15 border border-brand-500/25 flex items-center justify-center">
+                    <i class="fa-solid fa-lock text-brand-400 text-xs"></i>
+                </div>
+                <h2 class="text-sm font-bold v-text">Change Password</h2>
+            </div>
+            <button onclick="closePwdModal()" class="w-7 h-7 rounded-lg border v-border v-muted v-hover flex items-center justify-center text-xs transition-all">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="p-3 rounded-lg v-note border text-xs v-body">
+                <i class="fa-solid fa-circle-info text-brand-400 mr-1.5"></i>
+                If this is your first login, you are using a temporary OTP. Please set a new personal password now.
+            </div>
+
+            <div class="pwd-field">
+                <label>Current Password / OTP</label>
+                <div class="relative">
+                    <input type="password" id="pwdCurrent" placeholder="Enter your current password or OTP">
+                    <button type="button" class="pwd-toggle" onclick="togglePwdVisibility('pwdCurrent', this)"><i class="fa-regular fa-eye"></i></button>
+                </div>
+            </div>
+
+            <div class="pwd-field">
+                <label>New Password</label>
+                <div class="relative">
+                    <input type="password" id="pwdNew" placeholder="Enter new password" oninput="checkPwdStrength(this.value)">
+                    <button type="button" class="pwd-toggle" onclick="togglePwdVisibility('pwdNew', this)"><i class="fa-regular fa-eye"></i></button>
+                </div>
+                <div class="pwd-strength-bar mt-2">
+                    <div class="pwd-strength-fill" id="pwdStrengthFill" style="width:0%;background:#ef4444"></div>
+                </div>
+                <p class="text-[10px] v-muted mt-1" id="pwdStrengthLabel">Enter a password</p>
+                <div class="mt-2 space-y-1">
+                    <div class="flex items-center gap-1.5" id="req-len"><i class="fa-solid fa-circle text-[8px] text-muted" id="req-len-icon"></i><span class="text-[11px] v-muted">At least 8 characters</span></div>
+                    <div class="flex items-center gap-1.5" id="req-upper"><i class="fa-solid fa-circle text-[8px] text-muted" id="req-upper-icon"></i><span class="text-[11px] v-muted">Uppercase letter</span></div>
+                    <div class="flex items-center gap-1.5" id="req-num"><i class="fa-solid fa-circle text-[8px] text-muted" id="req-num-icon"></i><span class="text-[11px] v-muted">Number</span></div>
+                </div>
+            </div>
+
+            <div class="pwd-field">
+                <label>Confirm New Password</label>
+                <div class="relative">
+                    <input type="password" id="pwdConfirm" placeholder="Repeat new password" oninput="checkPwdMatch()">
+                    <button type="button" class="pwd-toggle" onclick="togglePwdVisibility('pwdConfirm', this)"><i class="fa-regular fa-eye"></i></button>
+                </div>
+                <p class="text-[11px] mt-1 hidden text-red-400" id="pwdMatchErr"><i class="fa-solid fa-xmark mr-1"></i>Passwords do not match</p>
+                <p class="text-[11px] mt-1 hidden text-emerald-400" id="pwdMatchOk"><i class="fa-solid fa-check mr-1"></i>Passwords match</p>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button onclick="closePwdModal()" class="flex-1 py-2.5 text-sm font-semibold v-muted v-surface border v-border rounded-xl transition-all v-hover">Cancel</button>
+                <button onclick="submitPwdChange()" class="flex-1 py-2.5 text-sm font-bold bg-brand-500 hover:bg-brand-600 text-white rounded-xl transition-all hover:shadow-glow">Update Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;"></div>
+
+<style>
+.toast {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 18px; border-radius:12px; min-width:260px; max-width:380px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4); pointer-events:all;
+    animation:toastIn .25s cubic-bezier(.16,1,.3,1) forwards;
+    border:1px solid;
+}
+.toast.removing { animation:toastOut .2s ease-in forwards; }
+.toast-success { background:#0f2a1e; border-color:rgba(16,185,129,0.3); color:#34d399; }
+.toast-error   { background:#2a0f0f; border-color:rgba(239,68,68,0.3);  color:#f87171; }
+.toast-info    { background:#0f1a2e; border-color:rgba(59,130,246,0.3);  color:#60a5fa; }
+html.light .toast-success { background:#f0fdf4; border-color:rgba(16,185,129,0.4); color:#059669; }
+html.light .toast-error   { background:#fef2f2; border-color:rgba(239,68,68,0.4);  color:#dc2626; }
+html.light .toast-info    { background:#eff6ff; border-color:rgba(59,130,246,0.4);  color:#2563eb; }
+.toast-icon    { font-size:14px; flex-shrink:0; }
+.toast-close   { margin-left:auto; background:none; border:none; cursor:pointer; opacity:0.5; color:inherit; font-size:14px; padding:0 2px; }
+.toast-close:hover { opacity:1; }
+@keyframes toastIn  { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+@keyframes toastOut { from{opacity:1;transform:none} to{opacity:0;transform:translateX(20px)} }
+</style>
+
+<script src="javascript/homedashboard.js"></script>
+
+</body>
+</html>
