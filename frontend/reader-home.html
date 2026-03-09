@@ -49,7 +49,6 @@
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
 
-        /* ── THEME VARIABLES (same as consumer dashboard) ── */
         html.dark {
             --bg:        #08101c;
             --surface:   #0f1a2e;
@@ -95,7 +94,6 @@
             --tog-pos:   23px;
         }
 
-        /* ── SEMANTIC UTILITY CLASSES ── */
         body       { background: var(--bg); color: var(--body); transition: background .3s, color .3s; }
         .v-card    { background: var(--card); border-color: var(--border); transition: background .3s, border-color .3s; }
         .v-surface { background: var(--surface); }
@@ -113,7 +111,6 @@
         .v-note    { background: var(--note-bg); border-color: var(--note-bdr); }
         .v-dropdown{ background: var(--card); border-color: var(--border); }
 
-        /* ── GRID BACKGROUND (dark only) ── */
         html.dark body::before {
             content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
             background-image:
@@ -124,19 +121,16 @@
         html.light body::before { display: none; }
         html.light .v-card { box-shadow: 0 2px 14px rgba(30,60,120,0.07); }
 
-        /* ── STAT CARD ACCENTS ── */
         .stat-accent::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:12px 12px 0 0; }
         .accent-blue::before   { background: linear-gradient(90deg,#3b82f6,transparent); }
         .accent-green::before  { background: linear-gradient(90deg,#10b981,transparent); }
         .accent-amber::before  { background: linear-gradient(90deg,#f59e0b,transparent); }
         .accent-cyan::before   { background: linear-gradient(90deg,#06b6d4,transparent); }
 
-        /* ── PROGRESS BARS ── */
         .prog-track { border-radius:999px; height:3px; width:100%; overflow:hidden; background:rgba(128,150,180,0.12); }
         html.light .prog-track { background: rgba(0,0,0,0.07); }
         .prog-fill  { height:100%; border-radius:999px; transition: width 1s cubic-bezier(.4,0,.2,1); }
 
-        /* ── TABS ── */
         .tab-pane { display: none; }
         .tab-pane.active { display: block; animation: slideUp 0.2s ease-out; }
         .tab-btn  { transition: all .15s; color: var(--muted); }
@@ -146,11 +140,9 @@
             box-shadow: 0 2px 10px rgba(0,0,0,.18);
         }
 
-        /* ── THEME TOGGLE PILL ── */
         .tog-pill  { width:44px; height:24px; border-radius:999px; background:var(--tog-track); position:relative; cursor:pointer; border:none; transition:background .3s; flex-shrink:0; }
         .tog-thumb { position:absolute; top:3px; width:18px; height:18px; border-radius:50%; background:var(--tog-thumb); left:var(--tog-pos); transition:left .3s cubic-bezier(.4,0,.2,1),background .3s; }
 
-        /* ── CAMERA VIEWFINDER ── */
         .scan-corner {
             position:absolute; width:22px; height:22px;
             border-color:#06b6d4; border-style:solid; border-width:0;
@@ -166,7 +158,6 @@
             animation: scanLine 2s linear infinite;
         }
 
-        /* ── INPUT FOCUS ── */
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #3b82f6 !important;
@@ -174,7 +165,6 @@
         }
         input[readonly] { opacity: 0.5; cursor: not-allowed; }
 
-        /* ── SCROLLBAR ── */
         ::-webkit-scrollbar { width:6px; height:6px; }
         ::-webkit-scrollbar-track { background: var(--surface); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius:99px; }
@@ -186,7 +176,6 @@
         @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
         @keyframes scanLine { 0%{top:10%} 100%{top:90%} }
 
-        /* ── TOAST ── */
         .toast {
             display:flex; align-items:center; gap:12px;
             padding:12px 18px; border-radius:12px; min-width:260px; max-width:380px;
@@ -216,18 +205,15 @@
 <nav class="sticky top-0 z-50 v-nav border-b backdrop-blur-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
 
-        <!-- Brand -->
         <div class="flex items-center gap-2.5">
             <i class="fa-solid fa-droplet text-cyan-400 text-sm"></i>
             <span class="v-text font-extrabold text-base tracking-tight">TUBIGTALA</span>
             <span class="hidden sm:inline-flex items-center text-[10px] font-mono font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded-full">Reader</span>
         </div>
 
-        <!-- Right side -->
         <div class="flex items-center gap-3">
             <span id="navClock" class="hidden sm:block font-mono text-xs v-muted v-surface border v-border rounded-lg px-3 py-1.5 select-none">00:00:00</span>
 
-            <!-- Theme toggle -->
             <div class="flex items-center gap-1.5">
                 <i class="fa-solid fa-moon text-[10px] v-muted hide-sm"></i>
                 <button class="tog-pill" onclick="toggleTheme()" title="Toggle theme">
@@ -236,7 +222,6 @@
                 <i class="fa-solid fa-sun text-[10px] v-muted hide-sm"></i>
             </div>
 
-            <!-- Avatar + dropdown -->
             <div class="relative">
                 <button onclick="toggleDrop(event)" class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-brand-500 flex items-center justify-center text-white text-xs font-bold relative select-none">
                     <span id="avatarLetter">R</span>
@@ -270,7 +255,7 @@
     <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-7">
         <div>
             <h1 class="text-2xl sm:text-3xl font-extrabold v-text tracking-tight">Reader Dashboard</h1>
-            <p class="text-sm v-muted mt-1">Welcome back — here's your water reading summary.</p>
+            <p class="text-sm v-muted mt-1">Welcome back! Here's your water reading summary.</p>
         </div>
         <div class="text-right">
             <p class="text-xs font-semibold v-text" id="headerName">Meter Reader</p>
@@ -352,8 +337,9 @@
                 <table class="w-full">
                     <thead>
                         <tr class="border-b v-border">
-                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Meter / Client ID</th>
-                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-sm">Name</th>
+                            <!-- ✅ FIX: Name is now always visible; Meter ID hidden on mobile -->
+                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Name</th>
+                            <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-sm">Meter / Client ID</th>
                             <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-md">Address</th>
                             <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4 hide-md">Last Reading</th>
                             <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest v-muted pr-4">Status</th>
@@ -363,8 +349,13 @@
                     <tbody id="consumersTableBody" class="divide-y v-divider">
 
                         <tr class="v-row-hover transition-colors">
-                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-8842-A</td>
-                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Maria Santos</td>
+                            <!-- ✅ FIX: Name cell always visible; Meter ID hidden on mobile -->
+                            <td class="py-3.5 pr-4">
+                                <p class="text-sm font-medium v-body">Maria Santos</p>
+                                <!-- Meter ID shown as subtle sub-label on mobile only -->
+                                <p class="font-mono text-[10px] v-muted mt-0.5 sm:hidden">WM-8842-A</p>
+                            </td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-sm">WM-8842-A</td>
                             <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">123 Mabini St, Brgy 1</td>
                             <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">1,245 m³ · Feb 7</td>
                             <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Pending</span></td>
@@ -377,8 +368,11 @@
                         </tr>
 
                         <tr class="v-row-hover transition-colors">
-                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-9031-B</td>
-                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Juan dela Cruz</td>
+                            <td class="py-3.5 pr-4">
+                                <p class="text-sm font-medium v-body">Juan dela Cruz</p>
+                                <p class="font-mono text-[10px] v-muted mt-0.5 sm:hidden">WM-9031-B</p>
+                            </td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-sm">WM-9031-B</td>
                             <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">456 Rizal Ave, Brgy 2</td>
                             <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">2,310 m³ · Feb 7</td>
                             <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Read</span></td>
@@ -391,8 +385,11 @@
                         </tr>
 
                         <tr class="v-row-hover transition-colors">
-                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-7741-C</td>
-                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Rosa Garcia</td>
+                            <td class="py-3.5 pr-4">
+                                <p class="text-sm font-medium v-body">Rosa Garcia</p>
+                                <p class="font-mono text-[10px] v-muted mt-0.5 sm:hidden">WM-7741-C</p>
+                            </td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-sm">WM-7741-C</td>
                             <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">789 Quezon Blvd, Brgy 3</td>
                             <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">985 m³ · Feb 6</td>
                             <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Pending</span></td>
@@ -405,8 +402,11 @@
                         </tr>
 
                         <tr class="v-row-hover transition-colors">
-                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-6630-D</td>
-                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Pedro Reyes</td>
+                            <td class="py-3.5 pr-4">
+                                <p class="text-sm font-medium v-body">Pedro Reyes</p>
+                                <p class="font-mono text-[10px] v-muted mt-0.5 sm:hidden">WM-6630-D</p>
+                            </td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-sm">WM-6630-D</td>
                             <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">321 Roxas St, Brgy 4</td>
                             <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">1,567 m³ · Feb 5</td>
                             <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Pending</span></td>
@@ -419,8 +419,11 @@
                         </tr>
 
                         <tr class="v-row-hover transition-colors">
-                            <td class="py-3.5 pr-4 font-mono text-xs v-muted">WM-5512-E</td>
-                            <td class="py-3.5 pr-4 text-sm font-medium v-body hide-sm">Angela Lopez</td>
+                            <td class="py-3.5 pr-4">
+                                <p class="text-sm font-medium v-body">Angela Lopez</p>
+                                <p class="font-mono text-[10px] v-muted mt-0.5 sm:hidden">WM-5512-E</p>
+                            </td>
+                            <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-sm">WM-5512-E</td>
                             <td class="py-3.5 pr-4 text-xs v-muted hide-md truncate max-w-[160px]">654 Magsaysay Rd, Brgy 5</td>
                             <td class="py-3.5 pr-4 font-mono text-xs v-muted hide-md">2,101 m³ · Feb 4</td>
                             <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Read</span></td>
@@ -456,7 +459,6 @@
 
             <div class="lg:col-span-2 space-y-5">
 
-                <!-- Big % -->
                 <div class="v-card border v-border rounded-xl p-5">
                     <div class="flex items-center justify-between mb-5">
                         <h2 class="text-sm font-bold v-text flex items-center gap-2">
@@ -497,7 +499,6 @@
                     </div>
                 </div>
 
-                <!-- Recent Readings Log -->
                 <div class="v-card border v-border rounded-xl p-5">
                     <h2 class="text-sm font-bold v-text flex items-center gap-2 mb-5">
                         <i class="fa-solid fa-clock-rotate-left text-brand-400 text-xs"></i> Recent Readings
@@ -541,7 +542,6 @@
                 </div>
             </div>
 
-            <!-- Today's Summary sidebar -->
             <div class="space-y-5">
                 <div class="v-card border v-border rounded-xl p-5">
                     <h2 class="text-sm font-bold v-text flex items-center gap-2 mb-5">
@@ -642,18 +642,16 @@
     <p class="font-mono text-xs v-muted">© 2026 TUBIGTALA · Polangui Waterworks Services Administration (POWASA)</p>
 </footer>
 
-</div><!-- end z-10 flex wrapper -->
+</div>
 
 <!-- ═══════════ MODAL: METER READING ═══════════ -->
 <div id="readingModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-md p-0 sm:p-4" style="animation:fadeIn .18s ease-out">
     <div class="v-card border v-border rounded-t-3xl sm:rounded-2xl w-full sm:max-w-lg shadow-2xl max-h-[95vh] overflow-y-auto" style="animation:slideUp .2s ease-out;border-color:var(--border-hi)!important">
 
-        <!-- Mobile handle -->
         <div class="flex justify-center pt-3 pb-1 sm:hidden">
             <div class="w-10 h-1 rounded-full" style="background:var(--muted)"></div>
         </div>
 
-        <!-- Header -->
         <div class="flex items-center justify-between px-6 pt-4 pb-4 border-b v-border">
             <div>
                 <h2 class="text-base font-bold v-text">Record Meter Reading</h2>
@@ -666,7 +664,6 @@
 
         <div class="px-6 py-5 space-y-4">
 
-            <!-- Read-only info -->
             <div class="grid grid-cols-2 gap-3">
                 <div class="v-surface border v-border rounded-xl p-3">
                     <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-1">Meter / Client ID</p>
@@ -683,12 +680,10 @@
                 <p class="text-xs v-muted mt-0.5" id="mAddress">—</p>
             </div>
 
-            <!-- Camera scan -->
             <div>
                 <p class="text-[10px] font-semibold uppercase tracking-widest v-muted mb-2">Scan Meter via Camera</p>
                 <div id="cameraSection" class="rounded-xl overflow-hidden border v-border v-surface relative" style="min-height:220px;">
 
-                    <!-- Placeholder -->
                     <div id="cameraPlaceholder" class="flex flex-col items-center justify-center h-full min-h-[220px] gap-4 px-4 py-6">
                         <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                             <i class="fa-solid fa-camera text-2xl text-cyan-400"></i>
@@ -703,7 +698,6 @@
                         </button>
                     </div>
 
-                    <!-- Camera active -->
                     <div id="cameraView" class="hidden flex-col h-full relative" style="min-height:280px;">
                         <video id="cameraFeed" autoplay playsinline class="w-full rounded-t-xl" style="max-height:260px;object-fit:cover;background:#060d1a;"></video>
                         <div id="scanOverlay" class="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -732,7 +726,6 @@
                         </div>
                     </div>
 
-                    <!-- Processing / OCR result -->
                     <div id="processingView" class="hidden flex-col items-center justify-center gap-3 min-h-[220px] px-6">
                         <div id="processingSpinner" class="flex flex-col items-center gap-3">
                             <div class="w-12 h-12 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin"></div>
@@ -758,14 +751,12 @@
                 </div>
             </div>
 
-            <!-- Divider -->
             <div class="flex items-center gap-3">
                 <div class="flex-1 h-px" style="background:var(--border)"></div>
                 <span class="text-[10px] font-semibold uppercase tracking-widest v-muted">or enter manually</span>
                 <div class="flex-1 h-px" style="background:var(--border)"></div>
             </div>
 
-            <!-- Manual entry -->
             <div>
                 <label class="block text-[10px] font-semibold uppercase tracking-widest v-muted mb-1.5">Current Meter Reading (m³) *</label>
                 <div class="flex gap-2">
@@ -776,14 +767,12 @@
                 <p class="text-[11px] v-muted mt-1.5">Enter the 5-digit reading shown on the meter display.</p>
             </div>
 
-            <!-- Notes -->
             <div>
                 <label class="block text-[10px] font-semibold uppercase tracking-widest v-muted mb-1.5">Notes / Remarks <span class="v-muted font-normal normal-case tracking-normal">(optional)</span></label>
                 <textarea id="readingNotes" rows="2" placeholder="Any observations, issues, or damage notes…"
                     class="v-input w-full border rounded-xl px-4 py-3 text-sm placeholder-muted resize-none transition-all"></textarea>
             </div>
 
-            <!-- Actions -->
             <div class="flex gap-3 pt-1">
                 <button onclick="closeReadingModal()"
                     class="flex-1 py-3 text-sm font-semibold v-muted v-surface v-hover border v-border rounded-xl transition-all">
@@ -834,209 +823,7 @@
 <!-- ═══════════ TOAST CONTAINER ═══════════ -->
 <div id="toastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;"></div>
 
-<script>
-    /* ────────────────────────────────────────────────────
-       THEME (matches consumer dashboard exactly)
-    ──────────────────────────────────────────────────── */
-   function applyTheme(m) {
-        const h = document.getElementById('htmlRoot');
-        h.classList.remove('dark','light');
-        h.classList.add(m);
-        localStorage.setItem('tubigtalaTheme', m);
-        const l = document.getElementById('themeLabel');
-        if (l) l.textContent = m === 'dark' ? 'Dark' : 'Light';
-    }
-    function toggleTheme() {
-        applyTheme(document.getElementById('htmlRoot').classList.contains('dark') ? 'light' : 'dark');
-    }
-    (function(){ applyTheme(localStorage.getItem('tubigtalaTheme') || 'dark'); })();
-
-    /* ────────────────────────────────────────────────────
-       CLOCK
-    ──────────────────────────────────────────────────── */
-    function updateClock() {
-        const t = new Date().toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-        const el = document.getElementById('navClock');
-        if (el) el.textContent = t;
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-
-    /* ────────────────────────────────────────────────────
-       TABS
-    ──────────────────────────────────────────────────── */
-    function switchTab(tabId, el) {
-        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        if (el) el.classList.add('active');
-    }
-
-    /* ────────────────────────────────────────────────────
-       DROPDOWN
-    ──────────────────────────────────────────────────── */
-    function toggleDrop(e) {
-        e.stopPropagation();
-        document.getElementById('dropMenu').classList.toggle('hidden');
-    }
-    document.addEventListener('click', () => {
-        const d = document.getElementById('dropMenu');
-        if (d) d.classList.add('hidden');
-    });
-
-    /* ────────────────────────────────────────────────────
-       LOGOUT
-    ──────────────────────────────────────────────────── */
-   function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-
-        localStorage.clear(); 
-
-        window.location.replace('landing page.html');
-    }
-}
-    /* ────────────────────────────────────────────────────
-       TOAST
-    ──────────────────────────────────────────────────── */
-    function showToast(message, type = 'success', duration = 3500) {
-        const icons = { success:'fa-circle-check', error:'fa-circle-xmark', info:'fa-circle-info' };
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <i class="fa-solid ${icons[type] || icons.success} toast-icon"></i>
-            <span>${message}</span>
-            <button class="toast-close" onclick="removeToast(this.parentElement)"><i class="fa-solid fa-times" style="font-size:11px"></i></button>
-        `;
-        container.appendChild(toast);
-        setTimeout(() => removeToast(toast), duration);
-    }
-    function removeToast(el) {
-        if (!el || el.classList.contains('removing')) return;
-        el.classList.add('removing');
-        setTimeout(() => el.remove(), 200);
-    }
-
-    /* ────────────────────────────────────────────────────
-       READING MODAL
-    ──────────────────────────────────────────────────── */
-    let currentStream = null;
-
-    function openReadingModal(acc, name, addr, lastReading) {
-        document.getElementById('modalSubtitle').textContent  = `${acc} · ${name}`;
-        document.getElementById('mAccNum').textContent        = acc;
-        document.getElementById('mLastReading').textContent   = `${lastReading} m³`;
-        document.getElementById('mConsumerName').textContent  = name;
-        document.getElementById('mAddress').textContent       = addr;
-        document.getElementById('meterReading').value         = '';
-        document.getElementById('readingNotes').value         = '';
-        showCameraPlaceholder();
-        document.getElementById('readingModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeReadingModal() {
-        closeCamera();
-        document.getElementById('readingModal').classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-    document.getElementById('readingModal').addEventListener('click', function(e) {
-        if (e.target === this) closeReadingModal();
-    });
-
-    function showCameraPlaceholder() {
-        document.getElementById('cameraPlaceholder').classList.remove('hidden');
-        document.getElementById('cameraView').classList.add('hidden');
-        document.getElementById('processingView').classList.add('hidden');
-    }
-
-    /* ── Camera ── */
-    async function openCamera() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-            currentStream = stream;
-            const feed = document.getElementById('cameraFeed');
-            feed.srcObject = stream;
-            document.getElementById('cameraPlaceholder').classList.add('hidden');
-            document.getElementById('cameraView').classList.remove('hidden');
-            document.getElementById('cameraView').style.display = 'flex';
-            document.getElementById('processingView').classList.add('hidden');
-        } catch (err) {
-            showToast('Camera access denied. Please enter reading manually.', 'error');
-        }
-    }
-
-    function closeCamera() {
-        if (currentStream) {
-            currentStream.getTracks().forEach(t => t.stop());
-            currentStream = null;
-        }
-        showCameraPlaceholder();
-    }
-
-    function captureFrame() {
-        closeCamera();
-        document.getElementById('processingView').classList.remove('hidden');
-        document.getElementById('processingView').style.display = 'flex';
-        document.getElementById('processingSpinner').classList.remove('hidden');
-        document.getElementById('ocrResult').classList.add('hidden');
-
-        // Simulate OCR processing
-        setTimeout(() => {
-            const fakeReading = (Math.floor(Math.random() * 900) + 1100).toString();
-            document.getElementById('ocrValueDisplay').textContent = fakeReading;
-            document.getElementById('processingSpinner').classList.add('hidden');
-            document.getElementById('ocrResult').classList.remove('hidden');
-        }, 1800);
-    }
-
-    function acceptOCR() {
-        const val = document.getElementById('ocrValueDisplay').textContent;
-        document.getElementById('meterReading').value = val;
-        showCameraPlaceholder();
-        showToast(`OCR reading ${val} m³ applied!`, 'success');
-    }
-
-    function retryCamera() {
-        showCameraPlaceholder();
-        setTimeout(() => openCamera(), 100);
-    }
-
-    /* ── Submit Reading ── */
-    function submitReading() {
-        const reading = document.getElementById('meterReading').value.trim();
-        if (!reading) {
-            showToast('Please enter or scan the meter reading first.', 'error');
-            return;
-        }
-        const btn = document.querySelector('[onclick="submitReading()"]');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> Submitting…';
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> Submit Reading';
-            closeReadingModal();
-            showToast(`Reading ${reading} m³ submitted successfully!`, 'success');
-        }, 1000);
-    }
-
-    /* ────────────────────────────────────────────────────
-       VIEW READING MODAL
-    ──────────────────────────────────────────────────── */
-    function viewReading(acc, name, reading) {
-        document.getElementById('viewAccNum').textContent    = acc;
-        document.getElementById('viewName').textContent      = name;
-        document.getElementById('viewReadingVal').textContent = reading;
-        document.getElementById('viewModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeViewModal() {
-        document.getElementById('viewModal').classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-    document.getElementById('viewModal').addEventListener('click', function(e) {
-        if (e.target === this) closeViewModal();
-    });
-</script>
+<script src="javascript/reader.js"></script>
 
 </body>
 </html>
