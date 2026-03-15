@@ -389,7 +389,11 @@
                 <span>Overview</span>
                 <span class="ml-auto text-[9px] font-mono bg-brand-500/15 text-brand-400 px-1.5 py-0.5 rounded-md">Live</span>
             </div>
-             <div class="nav-item" data-tab="consumers" onclick="switchTab('consumers', this)">
+            <div class="nav-item" data-tab="rates" onclick="switchTab('rates', this)">
+                <i class="nav-icon fa-solid fa-sliders"></i>
+                <span>Rates</span>
+            </div>
+            <div class="nav-item" data-tab="consumers" onclick="switchTab('consumers', this)">
                 <i class="nav-icon fa-solid fa-users"></i>
                 <span>Consumers</span>
                 <span class="ml-auto text-[9px] font-mono text-muted/70">245</span>
@@ -399,14 +403,14 @@
                 <span>Billing</span>
                 <span class="ml-auto w-1.5 h-1.5 rounded-full bg-red-400"></span>
             </div>
-            <div class="nav-item" data-tab="rates" onclick="switchTab('rates', this)">
-                <i class="nav-icon fa-solid fa-sliders"></i>
-                <span>Rates</span>
-            </div>
-            
             <div class="nav-item" data-tab="notices" onclick="switchTab('notices', this)">
                 <i class="nav-icon fa-solid fa-bell"></i>
                 <span>Notices</span>
+            </div>
+            <div class="nav-item" data-tab="readers" onclick="switchTab('readers', this)">
+                <i class="nav-icon fa-solid fa-person-walking-arrow-right"></i>
+                <span>Readers</span>
+                <span class="ml-auto text-[9px] font-mono text-muted/70">3</span>
             </div>
 
             <div class="mx-3 my-3 h-px bg-border"></div>
@@ -467,7 +471,7 @@
                     <p class="text-[10px] text-muted mt-1.5">active accounts</p>
                     <i class="fa-solid fa-users absolute top-3.5 right-3.5 text-xl text-brand-500/10"></i>
                 </div>
-               
+
                 <div class="relative stat-accent stat-accent-red bg-card border border-border rounded-xl p-4 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-borderHi hover:shadow-glowR">
                     <p class="text-[9px] font-semibold uppercase tracking-widest text-muted mb-2">Overdue Accounts</p>
                     <p class="text-2xl font-extrabold text-red-400 tracking-tight leading-none">23</p>
@@ -667,6 +671,62 @@
                                 <div class="flex-1"><p class="font-mono text-base font-medium text-body">₱160 / m³</p><p class="text-xs text-muted mt-0.5">Effective Oct 1, 2025</p></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Tariff Rates Table -->
+                <div class="bg-card border border-border rounded-xl p-5 mt-5">
+                    <h2 class="text-sm font-bold text-heading flex items-center gap-2 mb-5">
+                        <i class="fa-solid fa-table text-brand-400 text-xs"></i> POWASA Tariff Rates
+                    </h2>
+                    <div class="space-y-5">
+                        <!-- 1/2 Inch Pipe -->
+                        <div class="border border-border rounded-xl overflow-hidden">
+                            <div class="bg-surface px-4 py-3 border-b border-border">
+                                <h3 class="text-sm font-semibold text-heading">1/2" Pipe — Minimum Charge</h3>
+                                <p class="text-xs text-muted mt-1">Water consumption rates per cubic meter (m³)</p>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-border bg-canvas/50">
+                                            <th class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-muted">Consumption (m³)</th>
+                                            <th class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-muted">Rate (₱)</th>
+                                            <th class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-muted">Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-border/50">
+                                        <tr class="hover:bg-surface/30 transition-colors">
+                                            <td class="px-4 py-3 text-xs text-body font-mono">0 - 10 m³</td>
+                                            <td class="px-4 py-3 text-sm font-semibold text-brand-400">₱240.00</td>
+                                            <td class="px-4 py-3 text-xs text-muted">Minimum Charge</td>
+                                        </tr>
+                                        <tr class="hover:bg-surface/30 transition-colors">
+                                            <td class="px-4 py-3 text-xs text-body font-mono">11 - 20 m³</td>
+                                            <td class="px-4 py-3 text-sm font-semibold text-brand-400">₱15.00/m³</td>
+                                            <td class="px-4 py-3 text-xs text-muted">Additional</td>
+                                        </tr>
+                                        <tr class="hover:bg-surface/30 transition-colors">
+                                            <td class="px-4 py-3 text-xs text-body font-mono">21 - 30 m³</td>
+                                            <td class="px-4 py-3 text-sm font-semibold text-brand-400">₱18.75/m³</td>
+                                            <td class="px-4 py-3 text-xs text-muted">Additional</td>
+                                        </tr>
+                                        <tr class="hover:bg-surface/30 transition-colors">
+                                            <td class="px-4 py-3 text-xs text-body font-mono">31 - 40 m³</td>
+                                            <td class="px-4 py-3 text-sm font-semibold text-brand-400">₱20.50/m³</td>
+                                            <td class="px-4 py-3 text-xs text-muted">Additional</td>
+                                        </tr>
+                                        <tr class="hover:bg-surface/30 transition-colors">
+                                            <td class="px-4 py-3 text-xs text-body font-mono">41 m³ and above</td>
+                                            <td class="px-4 py-3 text-sm font-semibold text-brand-400">₱24.25/m³</td>
+                                            <td class="px-4 py-3 text-xs text-muted">Additional</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Additional pipe sizes will be added here -->
+                        <p class="text-xs text-muted italic px-4 py-2"><i class="fa-solid fa-circle-info text-brand-400 mr-1"></i> Other pipe sizes (3/4", 1", 1.5", 2") can be added below as needed.</p>
                     </div>
                 </div>
             </div>
@@ -946,8 +1006,186 @@
                 </div>
             </div>
 
+            <!-- ════════ TAB: READERS ════════ -->
+            <div id="readers" class="tab-pane">
+
+                <!-- Header row -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                    <div>
+                        <h2 class="text-sm font-bold text-heading flex items-center gap-2">
+                            <i class="fa-solid fa-person-walking-arrow-right text-brand-400 text-xs"></i> Meter Reader Accounts
+                            <span class="font-mono text-[10px] text-muted bg-surface border border-border px-2 py-0.5 rounded-full">3 total</span>
+                        </h2>
+                        <p class="text-xs text-muted mt-1">Manage reader accounts, assignments, and monitor progress.</p>
+                    </div>
+                    <button onclick="openCreateReaderModal()" class="flex items-center gap-1.5 bg-purple-500/10 hover:bg-purple-500/18 text-purple-400 border border-purple-500/25 hover:border-purple-500/40 rounded-lg px-3 py-2 text-xs font-bold transition-all self-start">
+                        <i class="fa-solid fa-user-plus text-[10px]"></i> Create Reader Account
+                    </button>
+                </div>
+
+                <!-- Reader cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+
+                    <!-- Reader card 1 -->
+                    <div class="bg-card border border-border rounded-xl overflow-hidden hover:border-borderHi transition-all">
+                        <div class="p-4 border-b border-border flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">J</div>
+                                <div>
+                                    <p class="text-sm font-bold text-heading">Juan Bautista</p>
+                                    <p class="text-[10px] font-mono text-muted">RDR-001</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active
+                            </span>
+                        </div>
+                        <div class="p-4 space-y-2 text-xs">
+                            <div class="flex justify-between"><span class="text-muted">Assigned Zone</span><span class="font-mono text-body">Zone A</span></div>
+                            <div class="flex justify-between"><span class="text-muted">Period</span><span class="font-mono text-body">Feb 10–15, 2026</span></div>
+                            <div class="flex justify-between"><span class="text-muted">Progress</span><span class="font-mono text-emerald-400">18 / 25</span></div>
+                            <div class="pt-1">
+                                <div class="progress-track"><div class="progress-fill bg-emerald-400" style="width:72%"></div></div>
+                                <p class="text-[10px] text-muted mt-1">72% complete</p>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4 flex gap-2">
+                            <button onclick="viewReader('RDR-001','Juan Bautista','Zone A','Feb 10–15, 2026','18','25','Active','09171112222')" class="flex-1 text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-eye text-[10px]"></i> Monitor
+                            </button>
+                            <button onclick="openAssignModal('RDR-001','Juan Bautista')" class="flex-1 text-xs font-semibold text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-clipboard-list text-[10px]"></i> Assign
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Reader card 2 -->
+                    <div class="bg-card border border-border rounded-xl overflow-hidden hover:border-borderHi transition-all">
+                        <div class="p-4 border-b border-border flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-brand-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">M</div>
+                                <div>
+                                    <p class="text-sm font-bold text-heading">Marcos Palma</p>
+                                    <p class="text-[10px] font-mono text-muted">RDR-002</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active
+                            </span>
+                        </div>
+                        <div class="p-4 space-y-2 text-xs">
+                            <div class="flex justify-between"><span class="text-muted">Assigned Zone</span><span class="font-mono text-body">Zone B</span></div>
+                            <div class="flex justify-between"><span class="text-muted">Period</span><span class="font-mono text-body">Feb 10–15, 2026</span></div>
+                            <div class="flex justify-between"><span class="text-muted">Progress</span><span class="font-mono text-emerald-400">22 / 30</span></div>
+                            <div class="pt-1">
+                                <div class="progress-track"><div class="progress-fill bg-brand-400" style="width:73%"></div></div>
+                                <p class="text-[10px] text-muted mt-1">73% complete</p>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4 flex gap-2">
+                            <button onclick="viewReader('RDR-002','Marcos Palma','Zone B','Feb 10–15, 2026','22','30','Active','09182223333')" class="flex-1 text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-eye text-[10px]"></i> Monitor
+                            </button>
+                            <button onclick="openAssignModal('RDR-002','Marcos Palma')" class="flex-1 text-xs font-semibold text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-clipboard-list text-[10px]"></i> Assign
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Reader card 3 -->
+                    <div class="bg-card border border-border rounded-xl overflow-hidden hover:border-borderHi transition-all">
+                        <div class="p-4 border-b border-border flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">L</div>
+                                <div>
+                                    <p class="text-sm font-bold text-heading">Lito Serrano</p>
+                                    <p class="text-[10px] font-mono text-muted">RDR-003</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Inactive
+                            </span>
+                        </div>
+                        <div class="p-4 space-y-2 text-xs">
+                            <div class="flex justify-between"><span class="text-muted">Assigned Zone</span><span class="font-mono text-muted">Unassigned</span></div>
+                            <div class="flex justify-between"><span class="text-muted">Period</span><span class="font-mono text-muted">—</span></div>
+                            <div class="flex justify-between"><span class="text-muted">Progress</span><span class="font-mono text-muted">— / —</span></div>
+                            <div class="pt-1">
+                                <div class="progress-track"><div class="progress-fill bg-muted/30" style="width:0%"></div></div>
+                                <p class="text-[10px] text-muted mt-1">No active assignment</p>
+                            </div>
+                        </div>
+                        <div class="px-4 pb-4 flex gap-2">
+                            <button onclick="viewReader('RDR-003','Lito Serrano','Unassigned','—','0','0','Inactive','09193334444')" class="flex-1 text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-eye text-[10px]"></i> Monitor
+                            </button>
+                            <button onclick="openAssignModal('RDR-003','Lito Serrano')" class="flex-1 text-xs font-semibold text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 px-3 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-clipboard-list text-[10px]"></i> Assign
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- All Readers Table -->
+                <div class="bg-card border border-border rounded-xl p-5">
+                    <h3 class="text-sm font-bold text-heading flex items-center gap-2 mb-5">
+                        <i class="fa-solid fa-table-list text-brand-400 text-xs"></i> All Reader Accounts
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-border">
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Reader ID</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Name</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4 hide-sm">Contact</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4 hide-md">Zone</th>
+                                    <th class="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-muted pr-4">Status</th>
+                                    <th class="pb-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border/50">
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">RDR-001</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body">Juan Bautista</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-sm">09171112222</td>
+                                    <td class="py-3.5 pr-4 text-xs text-body hide-md">Zone A</td>
+                                    <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active</span></td>
+                                    <td class="py-3.5 flex gap-1.5">
+                                        <button onclick="viewReader('RDR-001','Juan Bautista','Zone A','Feb 10–15, 2026','18','25','Active','09171112222')" class="text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1"><i class="fa-solid fa-eye text-[10px]"></i></button>
+                                        <button onclick="openAssignModal('RDR-001','Juan Bautista')" class="text-xs font-semibold text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1"><i class="fa-solid fa-clipboard-list text-[10px]"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">RDR-002</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body">Marcos Palma</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-sm">09182223333</td>
+                                    <td class="py-3.5 pr-4 text-xs text-body hide-md">Zone B</td>
+                                    <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active</span></td>
+                                    <td class="py-3.5 flex gap-1.5">
+                                        <button onclick="viewReader('RDR-002','Marcos Palma','Zone B','Feb 10–15, 2026','22','30','Active','09182223333')" class="text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1"><i class="fa-solid fa-eye text-[10px]"></i></button>
+                                        <button onclick="openAssignModal('RDR-002','Marcos Palma')" class="text-xs font-semibold text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1"><i class="fa-solid fa-clipboard-list text-[10px]"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-surface/60 transition-colors">
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted">RDR-003</td>
+                                    <td class="py-3.5 pr-4 text-sm font-medium text-body">Lito Serrano</td>
+                                    <td class="py-3.5 pr-4 font-mono text-xs text-muted hide-sm">09193334444</td>
+                                    <td class="py-3.5 pr-4 text-xs text-muted hide-md">Unassigned</td>
+                                    <td class="py-3.5 pr-4"><span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Inactive</span></td>
+                                    <td class="py-3.5 flex gap-1.5">
+                                        <button onclick="viewReader('RDR-003','Lito Serrano','Unassigned','—','0','0','Inactive','09193334444')" class="text-xs font-semibold text-brand-400 bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/20 px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1"><i class="fa-solid fa-eye text-[10px]"></i></button>
+                                        <button onclick="openAssignModal('RDR-003','Lito Serrano')" class="text-xs font-semibold text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1"><i class="fa-solid fa-clipboard-list text-[10px]"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <div class="mt-10 pt-5 border-t border-border text-center">
-                <p class="font-mono text-xs text-muted">© 2026 TUBIGTALA · Polangui Waterworks Services Administration (POWASA)</p>
+                <p class="font-mono text-xs text-muted">© 2026 TUBIGTALA — Water Meter Scanning & Billing System · POWASA</p>
             </div>
 
         </main>
@@ -1057,9 +1295,9 @@
                     <label>Meter Type <span class="text-red-400 font-normal normal-case">*</span></label>
                     <select id="ca_meterType">
                         <option value="">Select meter type...</option>
-                        <option value="Residential">Residential</option>
+                        
                         <option value="Commercial">Commercial</option>
-                        <option value="Bulk / Industrial">Bulk / Industrial</option>
+                       
                     </select>
                 </div>
 
@@ -1270,7 +1508,7 @@
 <!-- TOAST CONTAINER -->
 <div id="toastContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;"></div>
 
-   <style>
+<style>
 .toast {
     display:flex; align-items:center; gap:12px;
     padding:12px 18px; border-radius:12px; min-width:260px; max-width:380px;
@@ -1290,6 +1528,181 @@
 @keyframes toastOut { from{opacity:1;transform:none} to{opacity:0;transform:translateX(20px)} }
 </style>
 
+<!-- ═══════════════════ MODAL: CREATE READER ACCOUNT ═══════════════════ -->
+<div id="createReaderModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in">
+    <div class="bg-card border border-borderHi rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto animate-slide-up">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-border">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-500/25 flex items-center justify-center">
+                    <i class="fa-solid fa-user-plus text-purple-400 text-xs"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-heading">Create Reader Account</h2>
+                    <p class="text-[10px] text-muted">New meter reader credentials</p>
+                </div>
+            </div>
+            <button onclick="closeCreateReaderModal()" class="w-7 h-7 rounded-lg border border-border text-muted hover:text-body hover:border-borderHi flex items-center justify-center text-xs transition-all">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">First Name *</label>
+                    <input type="text" id="rdr_firstName" placeholder="e.g. Juan" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body placeholder-muted transition-all">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Last Name *</label>
+                    <input type="text" id="rdr_lastName" placeholder="e.g. Bautista" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body placeholder-muted transition-all">
+                </div>
+            </div>
+            <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Contact Number *</label>
+                <input type="tel" id="rdr_contact" placeholder="09XX XXX XXXX" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-body placeholder-muted transition-all">
+            </div>
+            <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Assigned Zone</label>
+                <select id="rdr_zone" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body transition-all">
+                    <option value="">— Assign later —</option>
+                    <option value="Zone A">Zone A — Barangay 1</option>
+                    <option value="Zone B">Zone B — Barangay 2</option>
+                    <option value="Zone C">Zone C — Barangay 3</option>
+                    <option value="Zone D">Zone D — Barangay 4</option>
+                </select>
+            </div>
+            <!-- Auto-generated credentials preview -->
+            <div class="p-4 rounded-xl bg-canvas border border-border space-y-3">
+                <p class="text-[10px] font-semibold uppercase tracking-widest text-muted">Auto-Generated Credentials</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-muted">Reader ID</span>
+                    <span class="font-mono text-sm font-bold text-purple-400" id="rdr_idPreview">RDR-004</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-muted">Temp. Password</span>
+                    <div class="flex items-center gap-2">
+                        <span class="font-mono text-sm font-bold text-amber-400" id="rdr_otpPreview">—</span>
+                        <button onclick="generateReaderOTP()" class="text-[10px] font-semibold text-muted hover:text-brand-400 bg-surface border border-border rounded-md px-2 py-1 transition-all">
+                            <i class="fa-solid fa-rotate text-[9px]"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="text-[11px] text-muted"><i class="fa-solid fa-circle-info text-brand-400 mr-1"></i> Reader logs in with their ID + temp password, then changes it on first login.</p>
+            </div>
+            <div class="flex gap-3 pt-1">
+                <button onclick="closeCreateReaderModal()" class="flex-1 py-2.5 text-sm font-semibold text-muted bg-surface hover:bg-cardHov border border-border rounded-xl transition-all">Cancel</button>
+                <button onclick="submitCreateReader()" class="flex-1 flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600 text-white font-bold text-sm rounded-xl py-2.5 transition-all">
+                    <i class="fa-solid fa-user-plus text-xs"></i> Create Reader
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ MODAL: MONITOR READER ═══════════════════ -->
+<div id="readerMonitorModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+    <div class="bg-card border border-borderHi rounded-2xl w-full max-w-lg p-6 shadow-2xl max-h-[88vh] overflow-y-auto animate-slide-up">
+        <div class="flex items-center justify-between mb-5">
+            <h2 class="text-base font-bold text-heading">Reader Monitor</h2>
+            <button onclick="closeReaderMonitorModal()" class="w-7 h-7 rounded-lg border border-border text-muted hover:text-body hover:border-borderHi flex items-center justify-center text-xs transition-all">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <!-- Profile row -->
+        <div class="flex items-center gap-4 p-4 bg-canvas border border-border rounded-xl mb-5">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-purple-500 flex items-center justify-center text-white text-base font-bold flex-shrink-0" id="rm_avatar">J</div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-heading" id="rm_name">—</p>
+                <p class="text-[10px] font-mono text-muted mt-0.5" id="rm_id">—</p>
+            </div>
+            <span id="rm_statusBadge" class="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full border"></span>
+        </div>
+        <!-- Stats grid -->
+        <div class="grid grid-cols-2 gap-3 mb-5">
+            <div class="bg-canvas border border-border rounded-xl p-3.5">
+                <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-1">Zone</p>
+                <p class="text-sm font-bold text-body" id="rm_zone">—</p>
+            </div>
+            <div class="bg-canvas border border-border rounded-xl p-3.5">
+                <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-1">Period</p>
+                <p class="text-sm font-bold text-body font-mono" id="rm_period">—</p>
+            </div>
+            <div class="bg-canvas border border-border rounded-xl p-3.5">
+                <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-1">Contact</p>
+                <p class="text-sm font-bold text-body font-mono" id="rm_contact">—</p>
+            </div>
+            <div class="bg-canvas border border-border rounded-xl p-3.5">
+                <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-1">Progress</p>
+                <p class="text-sm font-bold text-emerald-400 font-mono" id="rm_progress">—</p>
+            </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="mb-5">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs text-muted">Completion Rate</span>
+                <span class="font-mono text-xs text-emerald-400" id="rm_pct">—</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill bg-emerald-400" id="rm_bar" style="width:0%"></div></div>
+        </div>
+        <!-- Recent activity log -->
+        <p class="text-[10px] font-semibold uppercase tracking-widest text-muted mb-3">Recent Activity</p>
+        <div class="space-y-2 mb-5" id="rm_activityLog">
+            <div class="flex items-center justify-between p-3 bg-canvas border border-border rounded-lg text-xs">
+                <span class="text-muted">No activity data yet</span>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeReaderMonitorModal()" class="flex-1 py-2.5 text-sm font-semibold text-muted bg-surface hover:bg-cardHov border border-border rounded-xl transition-all">Close</button>
+            <button onclick="openAssignFromMonitor()" class="flex-1 flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600 text-white font-semibold text-sm rounded-xl py-2.5 transition-all">
+                <i class="fa-solid fa-clipboard-list text-xs"></i> Set Assignment
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════ MODAL: ASSIGN READER ═══════════════════ -->
+<div id="assignModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+    <div class="bg-card border border-borderHi rounded-2xl w-full max-w-sm p-6 shadow-2xl animate-slide-up">
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <h2 class="text-base font-bold text-heading">Set Assignment</h2>
+                <p class="text-xs text-muted mt-0.5" id="assignSubtitle">RDR-001 · Juan Bautista</p>
+            </div>
+            <button onclick="closeAssignModal()" class="w-7 h-7 rounded-lg border border-border text-muted hover:text-body hover:border-borderHi flex items-center justify-center text-xs transition-all">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Zone *</label>
+                <select id="assign_zone" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body transition-all">
+                    <option value="">Select zone...</option>
+                    <option value="Zone A">Zone A — Barangay 1</option>
+                    <option value="Zone B">Zone B — Barangay 2</option>
+                    <option value="Zone C">Zone C — Barangay 3</option>
+                    <option value="Zone D">Zone D — Barangay 4</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Start Date *</label>
+                <input type="date" id="assign_startDate" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-body transition-all">
+            </div>
+            <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">End Date *</label>
+                <input type="date" id="assign_endDate" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm font-mono text-body transition-all">
+            </div>
+            <div>
+                <label class="block text-[10px] font-semibold uppercase tracking-widest text-muted mb-1.5">Notes</label>
+                <textarea id="assign_notes" rows="2" placeholder="Any special instructions…" class="w-full bg-canvas border border-border rounded-lg px-3 py-2.5 text-sm text-body placeholder-muted resize-none transition-all"></textarea>
+            </div>
+            <div class="flex gap-3 pt-1">
+                <button onclick="closeAssignModal()" class="flex-1 py-2.5 text-sm font-semibold text-muted bg-surface hover:bg-cardHov border border-border rounded-xl transition-all">Cancel</button>
+                <button onclick="submitAssignment()" class="flex-1 flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600 text-white font-bold text-sm rounded-xl py-2.5 transition-all">
+                    <i class="fa-solid fa-check text-xs"></i> Save Assignment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="javascript/admin.js"></script>
 
 </body>

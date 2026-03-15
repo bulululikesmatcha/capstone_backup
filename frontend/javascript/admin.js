@@ -407,3 +407,159 @@
         caGenerateOTP();
     }
     
+
+    /* ════════════════════════════════════════════════════
+       try
+    ════════════════════════════════════════════════════ */
+     /* ════════════════════════════════════════════════════
+       READERS — CREATE ACCOUNT MODAL
+    ════════════════════════════════════════════════════ */
+    let readerOTP = '';
+    let currentAssignReaderId = '';
+    let currentAssignReaderName = '';
+
+    function openCreateReaderModal() {
+        document.getElementById('createReaderModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        generateReaderOTP();
+        ['rdr_firstName','rdr_lastName','rdr_contact','rdr_zone'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+    }
+    function closeCreateReaderModal() {
+        document.getElementById('createReaderModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    document.getElementById('createReaderModal').addEventListener('click', function(e) {
+        if (e.target === this) closeCreateReaderModal();
+    });
+
+    function generateReaderOTP() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let otp = '';
+        for (let i = 0; i < 8; i++) {
+            if (i === 4) otp += '-';
+            otp += chars[Math.floor(Math.random() * chars.length)];
+        }
+        readerOTP = otp;
+        const el = document.getElementById('rdr_otpPreview');
+        if (el) el.textContent = otp;
+    }
+
+    function submitCreateReader() {
+        const fn   = document.getElementById('rdr_firstName').value.trim();
+        const ln   = document.getElementById('rdr_lastName').value.trim();
+        const ph   = document.getElementById('rdr_contact').value.trim();
+        if (!fn || !ln || !ph) { showToast('Please fill in all required fields.', 'error'); return; }
+        const btn = document.querySelector('[onclick="submitCreateReader()"]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> Creating…';
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-user-plus text-xs"></i> Create Reader';
+            closeCreateReaderModal();
+            showToast(`Reader account for ${fn} ${ln} created successfully!`, 'success');
+        }, 1000);
+    }
+
+    /* ── MONITOR MODAL ── */
+    let currentMonitorId = '';
+    const activitySamples = {
+        'RDR-001': [
+            { time:'09:30 AM', note:'Submitted reading for WM-9031-B · 2,310 m³' },
+            { time:'08:15 AM', note:'Submitted reading for WM-5512-E · 2,101 m³' },
+            { time:'Yesterday', note:'Submitted reading for WM-8842-A · 1,245 m³' },
+        ],
+        'RDR-002': [
+            { time:'10:05 AM', note:'Submitted reading for WM-4401-F · 1,890 m³' },
+            { time:'09:00 AM', note:'Submitted reading for WM-3312-G · 3,110 m³' },
+        ],
+        'RDR-003': []
+    };
+
+    function viewReader(id, name, zone, period, done, total, status, contact) {
+        currentMonitorId = id;
+        document.getElementById('rm_avatar').textContent  = name.charAt(0).toUpperCase();
+        document.getElementById('rm_name').textContent    = name;
+        document.getElementById('rm_id').textContent      = id;
+        document.getElementById('rm_zone').textContent    = zone;
+        document.getElementById('rm_period').textContent  = period;
+        document.getElementById('rm_contact').textContent = contact;
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        document.getElementById('rm_progress').textContent = `${done} / ${total}`;
+        document.getElementById('rm_pct').textContent      = `${pct}%`;
+        document.getElementById('rm_bar').style.width      = `${pct}%`;
+
+        const badge = document.getElementById('rm_statusBadge');
+        if (status === 'Active') {
+            badge.textContent  = '';
+            badge.className    = 'inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-0.5 rounded-full';
+            badge.innerHTML    = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active';
+        } else {
+            badge.className    = 'inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 rounded-full';
+            badge.innerHTML    = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Inactive';
+        }
+
+        const log = document.getElementById('rm_activityLog');
+        const acts = activitySamples[id] || [];
+        if (acts.length === 0) {
+            log.innerHTML = '<div class="p-3 bg-canvas border border-border rounded-lg text-xs text-muted">No activity recorded yet.</div>';
+        } else {
+            log.innerHTML = acts.map(a => `
+                <div class="flex items-center justify-between p-3 bg-canvas border border-border rounded-lg text-xs">
+                    <span class="text-body">${a.note}</span>
+                    <span class="font-mono text-muted ml-3 whitespace-nowrap">${a.time}</span>
+                </div>`).join('');
+        }
+
+        document.getElementById('readerMonitorModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeReaderMonitorModal() {
+        document.getElementById('readerMonitorModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    document.getElementById('readerMonitorModal').addEventListener('click', function(e) {
+        if (e.target === this) closeReaderMonitorModal();
+    });
+    function openAssignFromMonitor() {
+        closeReaderMonitorModal();
+        const name = document.getElementById('rm_name').textContent;
+        openAssignModal(currentMonitorId, name);
+    }
+
+    /* ── ASSIGN MODAL ── */
+    function openAssignModal(id, name) {
+        currentAssignReaderId   = id;
+        currentAssignReaderName = name;
+        document.getElementById('assignSubtitle').textContent = `${id} · ${name}`;
+        document.getElementById('assign_zone').value      = '';
+        document.getElementById('assign_startDate').value = '';
+        document.getElementById('assign_endDate').value   = '';
+        document.getElementById('assign_notes').value     = '';
+        document.getElementById('assignModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeAssignModal() {
+        document.getElementById('assignModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    document.getElementById('assignModal').addEventListener('click', function(e) {
+        if (e.target === this) closeAssignModal();
+    });
+    function submitAssignment() {
+        const zone  = document.getElementById('assign_zone').value;
+        const start = document.getElementById('assign_startDate').value;
+        const end   = document.getElementById('assign_endDate').value;
+        if (!zone || !start || !end) { showToast('Please fill in zone and both dates.', 'error'); return; }
+        const btn = document.querySelector('[onclick="submitAssignment()"]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i> Saving…';
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> Save Assignment';
+            closeAssignModal();
+            showToast(`Assignment saved for ${currentAssignReaderName} — ${zone}`, 'success');
+        }, 900);
+    }
